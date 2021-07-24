@@ -1,0 +1,12 @@
+.tab-pane, .tab-pane *.tab-header-background {
+    -fx-background-color: #1F2527;
+}
+
+.tab, .tab .tab-label {
+    -fx-background-color: #1F2527;
+    -fx-text-fill: #F3F3F4;
+}
+
+.tab:selected, .tab:selected .tab-label {
+    -fx-background-color: #272B2F;
+}

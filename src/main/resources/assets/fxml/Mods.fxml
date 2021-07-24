@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="442.0" prefWidth="966.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.Mods">
+   <children>
+      <ScrollPane hbarPolicy="NEVER" layoutX="283.0" layoutY="14.0" prefHeight="402.0" prefWidth="400.0" styleClass="background">
+         <content>
+            <VBox fx:id="modBox" prefHeight="400.0" prefWidth="400.0" styleClass="background" />
+         </content>
+      </ScrollPane>
+      <Button fx:id="btnAddMod" alignment="CENTER" layoutX="753.0" layoutY="14.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="126.0">
+         <graphic>
+            <Label text="Add Mod" textFill="#f3f3f4">
+               <font>
+                  <Font name="Consolas" size="12.0" />
+               </font>
+            </Label>
+         </graphic>
+      </Button>
+      <Button fx:id="btnRemoveMod" alignment="CENTER" layoutX="753.0" layoutY="68.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="126.0">
+         <graphic>
+            <Label text="Remove Mod" textFill="#f3f3f4">
+               <font>
+                  <Font name="Consolas" size="12.0" />
+               </font>
+            </Label>
+         </graphic>
+      </Button>
+      <Button fx:id="btnMoveUp" alignment="CENTER" layoutX="753.0" layoutY="122.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="126.0">
+         <graphic>
+            <Label text="Move Up" textFill="#f3f3f4">
+               <font>
+                  <Font name="Consolas" size="12.0" />
+               </font>
+            </Label>
+         </graphic>
+      </Button>
+      <Button fx:id="btnMoveDown" alignment="CENTER" layoutX="753.0" layoutY="176.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="126.0">
+         <graphic>
+            <Label text="Move Down" textFill="#f3f3f4">
+               <font>
+                  <Font name="Consolas" size="12.0" />
+               </font>
+            </Label>
+         </graphic>
+      </Button>
+      <Button fx:id="btnOpenHydra" alignment="CENTER" layoutX="753.0" layoutY="230.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="126.0">
+         <graphic>
+            <Label text="Open .hydra" textFill="#f3f3f4">
+               <font>
+                  <Font name="Consolas" size="12.0" />
+               </font>
+            </Label>
+         </graphic>
+      </Button>
+      <CheckBox layoutX="753.0" layoutY="279.0" mnemonicParsing="false" text="Show all mods" textFill="#f3f3f3" />
+      <Label fx:id="lblNoMods" alignment="CENTER" layoutX="251.0" layoutY="32.0" prefHeight="16.0" prefWidth="457.0" text="You have no mods installed!" textFill="#f3f3f4" />
+   </children>
+   <stylesheets>
+      <URL value="@css/font.css" />
+      <URL value="@css/window.css" />
+      <URL value="@css/mods.css" />
+   </stylesheets>
+</Pane>

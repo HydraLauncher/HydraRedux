@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<Pane id="background" fx:id="background" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="212.0" prefWidth="913.0" styleClass="background" stylesheets="@css/news.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.NewsEntry">
+   <children>
+      <Hyperlink fx:id="lnkPost" layoutX="14.0" layoutY="10.0" text="POST_TITLE" textFill="#3c5f73" underline="true">
+         <font>
+            <Font name="Comfortaa Regular" size="24.0" />
+         </font>
+      </Hyperlink>
+      <VBox fx:id="lineContainer" layoutX="8.0" layoutY="56.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="144.0" prefWidth="897.0" styleClass="background" />
+   </children>
+</Pane>

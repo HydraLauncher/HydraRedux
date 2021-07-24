@@ -1,0 +1,15 @@
+* {
+    -fx-font-family: 'Comfortaa';
+}
+
+
+#background {
+    -fx-background-color: #1F2527;
+}
+
+.button {
+    -fx-font-size: 16px;
+    -fx-background-color: #272B2F;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}

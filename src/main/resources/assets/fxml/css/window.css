@@ -1,0 +1,75 @@
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('Comfortaa-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('Comfortaa-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('Comfortaa-Light.ttf');
+}
+
+* {
+    -fx-font-family: 'Comfortaa';
+}
+
+.spinner {
+    -fx-background-color: rgb(39, 43, 47);
+    -fx-text-fill: rgb(243, 243, 244);
+}
+
+.spinner -increment-arrow-button, .spinner -decrement-arrow-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgb(243, 243, 244);
+}
+
+.text-field, .combo-box {
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+    -fx-background-color: rgb(39, 43, 47);
+    -fx-text-fill: rgb(243, 243, 244);
+}
+
+.combo-box .list-view {
+    -fx-background-color: rgb(39, 43, 47);
+}
+
+.combo-box .list-cell {
+    -fx-background-color: rgb(39, 43, 47);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+    -fx-text-fill: rgb(243, 243, 244);
+}
+
+.combo-box-popup .list-cell:disabled  {
+    -fx-opacity: 0.4 ;
+}
+
+.check-box .box {
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+    -fx-background-color: rgb(39, 43, 47);
+}
+
+.background {
+    -fx-background-color: #1F2527;
+}
+
+.text-area, .text-area .content {
+    -fx-background-color: #1F2527;
+    -fx-background-radius: 0px;
+    -fx-text-fill: #B3B5B8;
+    -fx-border-style: none;
+    -fx-border-radius: 0px;
+}
+
+.button {
+    -fx-background-color: #272B2F;
+    -fx-text-fill: #F3F3F4;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}

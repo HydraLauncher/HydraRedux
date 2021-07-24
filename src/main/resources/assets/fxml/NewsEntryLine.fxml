@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="600.0" styleClass="background" stylesheets="@css/news.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.NewsEntryLine">
+   <children>
+      <Label fx:id="lblContent" layoutX="11.0" layoutY="3.0" prefHeight="21.0" prefWidth="579.0" text="CONTENT" textFill="#b3b5b8">
+         <font>
+            <Font name="Comfortaa Regular" size="16.0" />
+         </font></Label>
+   </children>
+</Pane>

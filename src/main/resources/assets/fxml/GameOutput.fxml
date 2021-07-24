@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="442.0" prefWidth="966.0" styleClass="background" stylesheets="@css/window.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.GameOutput">
+   <children>
+      <TextArea fx:id="outputField" layoutX="18.0" layoutY="17.0" prefHeight="409.0" prefWidth="930.0" styleClass="text-area" />
+   </children>
+</Pane>

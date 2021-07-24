@@ -1,0 +1,99 @@
+* {
+    -fx-font-family: 'Comfortaa';
+}
+
+.dl-failed .track {
+    -fx-background-color: #FF0000;
+}
+
+.dl-completed .track {
+    -fx-background-color: #00FF00;
+}
+
+#pBar .track {
+    -fx-background-color: #1F3846;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#pBar .bar {
+    -fx-background-color: #B3B5B8;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+.tab {
+    -fx-font-family: 'Comfortaa';
+    -fx-font-size: 24px;
+}
+
+.tab:hover {
+    -fx-text-fill: #6F6F6F;
+}
+
+.selectedTab {
+    -fx-text-fill: #1F3846;
+}
+
+#background {
+    -fx-background-color: rgb(31, 37, 39);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#topBar {
+    -fx-background-color: rgb(22, 27, 29);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#bottomBarLogo {
+    -fx-background-image: url("../../images/hydra.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-background-size: 256 69;
+}
+
+#bottomBar {
+    -fx-background-color: rgb(22, 27, 29);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+.button {
+    -fx-background-color: rgb(39, 43, 47);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+
+    /*-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0.8, 0.0, 0.0);*/
+    /*-fx-text-fill: rgb(243, 243, 244);*/
+}
+
+#btnLogout {
+    -fx-background-color: rgb(31, 56, 70);
+    -fx-font-size: 14px;
+}
+
+#lblLogout {
+    -fx-font-weight: bold;
+}
+
+#lblPlay {
+    -fx-font-size: 30px;
+}
+
+#lblProfile {
+    -fx-font-size: 12px;
+}
+
+#lblVersion {
+    -fx-font-size: 14px;
+}
+
+#lblSettings {
+    -fx-font-size: 18px;
+}
+
+#lblNewProfile, #lblEditProfile, #lblDeleteProfile {
+    -fx-font-size: 12px;
+}

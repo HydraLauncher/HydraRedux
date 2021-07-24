@@ -1,0 +1,82 @@
+* {
+    -fx-font-family: 'Comfortaa';
+}
+
+.entry {
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+    -fx-fill: transparent;
+}
+
+.entry:hover {
+    -fx-background-color: #161B1D;
+}
+
+.mod-icon {
+    -fx-background-image: url('../../images/file.png');
+    -fx-background-repeat: stretch;
+    -fx-background-position: center;
+    -fx-background-size: 32 32;
+}
+
+.mod-remove-button {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../../images/delete.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center;
+    -fx-background-size: 32 32;
+}
+
+.mod-enable-checkbox:unselected {
+    -fx-text-fill: #b3b5b8;
+}
+
+.mod-enable-checkbox:selected {
+    -fx-text-fill: #f3f3f4;
+}
+
+#background {
+    -fx-background-color: #1F2527;
+}
+
+.table-view .label {
+    -fx-text-fill: #B3B5B8;
+}
+
+.table-view {
+    -fx-background-color: #161B1D;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+.table-view .column-header-background, -table-view -column-header-background .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #161B1D;
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+    -fx-scale-x: 0.9;
+}
+
+.table-column .label {
+    -fx-text-fill: #B3B5B8;
+}
+
+.table-row-cell {
+    -fx-text-fill: #B3B5B8;
+    -fx-text-alignment: center;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #1F3846;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #161B1D;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #272B2F;
+}

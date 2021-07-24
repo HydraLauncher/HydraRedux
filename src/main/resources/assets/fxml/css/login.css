@@ -1,0 +1,78 @@
+.label {
+    -fx-font-family: 'Comfortaa';
+}
+
+.button {
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#betaWarning {
+    -fx-background-color: rgb(22, 27, 29);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#btnCloseWindow {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-background-image: url("../../images/close.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-background-size: 25 25;
+}
+
+#logo {
+    -fx-background-image: url("../../images/hydra.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+    -fx-background-size: 398 140;
+}
+
+#background {
+    -fx-background-color: rgb(31, 37, 39);
+    -fx-background-radius: 32px;
+    -fx-border-radius: 32px;
+}
+
+#grpLogin {
+    -fx-background-color: rgb(22, 27, 29);
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+}
+
+#grpCreateAccount {
+    -fx-background-color: rgb(22, 27, 29);
+    -fx-background-radius: 24px;
+    -fx-border-radius: 24px;
+}
+
+#btnLogin {
+    -fx-background-color: rgb(31, 56, 70);
+}
+
+#lblSignIn {
+    -fx-font-size: 40px;
+}
+
+#lblLogin {
+    -fx-font-size: 24px;
+    -fx-text-align: center;
+}
+
+#lblEmail {
+    -fx-font-size: 14px;
+}
+
+#lblPassword {
+    -fx-font-size: 14px;
+}
+
+#btnCreateAccount {
+    -fx-background-color: rgb(39, 43, 47);
+    -fx-font-size: 12px;
+}
+
+#linkForgotPassword {
+    -fx-font-family: 'Comfortaa';
+    -fx-text-fill: rgb(31, 56, 70);
+}
