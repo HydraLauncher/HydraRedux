@@ -1,20 +1,27 @@
 package org.gethydra.redux;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Util
@@ -34,14 +41,53 @@ public class Util
 
     public static void openNetpage(String url)
     {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+        SwingUtilities.invokeLater(() ->
         {
-            try
+            if (Desktop.isDesktopSupported())
             {
-                Desktop.getDesktop().browse(new URI(url));
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                try
+                {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.BROWSE))
+                        desktop.browse(new URI(url));
+                } catch (Exception ex) {
+                    ex.printStackTrace(System.err);
+                    Util.alert("Oh noes!", "Failed to open link: " + ex.getMessage(), Alert.AlertType.ERROR);
+                }
             }
+        });
+    }
+
+    public static String[] parseJavaInstallation(String javaHome)
+    {
+        File javaHomeDir = new File(javaHome);
+        String version = null;
+        String architecture = null;
+
+        if (javaHomeDir.isDirectory())
+        {
+            String[] parts = javaHomeDir.getName().split("[_-]");
+
+            if (parts.length >= 2)
+            {
+                version = parts[1];
+                if (parts.length >= 3) architecture = parts[2];
+            }
+        }
+
+        if (version != null) return new String[]{version, architecture};
+        return null;
+    }
+
+    public static boolean isFileSymlink(File file)
+    {
+        try
+        {
+            BasicFileAttributes attributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            return attributes.isSymbolicLink();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -50,7 +96,7 @@ public class Util
         try
         {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url);
+            HttpGet httpPost = new HttpGet(url);
             HttpResponse response = httpclient.execute(httpPost);
             HttpEntity responseEntity = response.getEntity();
             InputStream is = responseEntity.getContent();
@@ -107,20 +153,21 @@ public class Util
         });
     }
 
+    public static boolean getConfirmation(String title, String message)
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText("Confirm Action");
+        alert.setContentText(message);
+        Optional<ButtonType> option = alert.showAndWait();
+        return ButtonType.OK.equals(option.get());
+    }
+
     public static String calcSHA1(File file) throws FileNotFoundException, IOException, NoSuchAlgorithmException
     {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-        try (InputStream input = new FileInputStream(file)) {
-
-            byte[] buffer = new byte[8192];
-            int len = input.read(buffer);
-
-            while (len != -1) {
-                sha1.update(buffer, 0, len);
-                len = input.read(buffer);
-            }
-
-            return new HexBinaryAdapter().marshal(sha1.digest());
+        try (InputStream input = new FileInputStream(file))
+        {
+            return DigestUtils.sha1Hex(input);
         }
     }
 

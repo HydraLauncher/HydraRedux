@@ -1,9 +1,11 @@
 package org.gethydra.redux.backend.profiles;
 
+import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.LauncherVisibility;
 import org.gethydra.redux.backend.mods.Mod;
 import org.gethydra.redux.backend.mods.ModManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -45,7 +47,7 @@ public class LauncherProfile
 
     public String getGameDirectory()
     {
-        return gameDirectory;
+        return new File(Util.getHydraDirectory(), "profiles/" + name + "/").getAbsolutePath();
     }
 
     public int getWidth()

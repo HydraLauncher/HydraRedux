@@ -28,7 +28,7 @@ public class MainScene extends HydraScene<Main>
             this.accessToken = store.getString("accessToken", "1337");
 
             //TODO: change to conform to account type when those are added in
-            String skinUrl = String.format("https://api.gethydra.org/cosmetics/avatar?username=%s&type=hydra", this.username);
+            String skinUrl = String.format("https://mc-heads.net/avatar/%s/24", this.username);
             getController().avatar.setFill(new ImagePattern(new Image(skinUrl)));
 
             getController().lblUsername.setText(username);

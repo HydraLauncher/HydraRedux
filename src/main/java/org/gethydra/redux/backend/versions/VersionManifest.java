@@ -7,6 +7,15 @@ public class VersionManifest
     public LatestVersion latest;
     public ArrayList<Version> versions;
 
+    public VersionManifest() {}
+
+    public VersionManifest(boolean test)
+    {
+        this.latest = new LatestVersion("b1.7.3", "b1.7.3");
+        this.versions = new ArrayList<>();
+        this.versions.add(new Version(true));
+    }
+
     public Version find(String id)
     {
         for (Version v : versions)
@@ -19,5 +28,13 @@ public class VersionManifest
     {
         public String release;
         public String snapshot;
+
+        public LatestVersion() {}
+
+        public LatestVersion(String release, String snapshot)
+        {
+            this.release = release;
+            this.snapshot = snapshot;
+        }
     }
 }

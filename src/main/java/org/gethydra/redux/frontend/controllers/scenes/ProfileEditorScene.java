@@ -55,14 +55,6 @@ public class ProfileEditorScene extends HydraScene<ProfileEditor>
             getController().cbBetas.setSelected(selectedProfile.areBetasEnabled());
             getController().cbAlphas.setSelected(selectedProfile.areAlphasEnabled());
 
-            while (versionManifest == null)
-            {
-                try
-                {
-                    Thread.sleep(20);
-                } catch (InterruptedException ignored) {}
-            }
-
             ArrayList<Version> filteredVersions = new VersionFilter().filter(versionManifest.versions, selectedProfile.areSnapshotsEnabled(), selectedProfile.areBetasEnabled(), selectedProfile.areAlphasEnabled());
             getController().cmbVersion.setItems(FXCollections.observableArrayList(filteredVersions));
             getController().cmbVersion.getSelectionModel().select(versionManifest.find(selectedProfile.getSelectedVersion()));

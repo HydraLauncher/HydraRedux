@@ -42,7 +42,7 @@ public class ProfileManager
             else
                 log.info("Launcher profiles file exists. No action taken.");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.severe("Failed to check sanity of launcher profiles");
         }
     }
 
@@ -132,7 +132,7 @@ public class ProfileManager
                 log.warning("Loaded profiles from disk");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -149,7 +149,7 @@ public class ProfileManager
                 log.warning("Saved profiles to disk");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -167,7 +167,7 @@ public class ProfileManager
         LauncherProfile profile = new LauncherProfile();
         profile.setInternalUUID(UUID.randomUUID().toString());
         profile.setName(name);
-        profile.setGameDirectory(Objects.requireNonNull(Util.getHydraDirectory()).getAbsolutePath());
+        profile.setGameDirectory(Objects.requireNonNull(new File(Util.getHydraDirectory(), "profiles/" + name)).getAbsolutePath());
         profile.setWidth(854);
         profile.setHeight(480);
         profile.setAutoCrashReport(true);
@@ -175,7 +175,7 @@ public class ProfileManager
         profile.setBetasEnabled(true);
         profile.setAlphasEnabled(true);
         profile.setSelectedVersion(HydraRedux.getInstance().getVersionManifest().latest.release);
-        profile.setExecutable(Objects.requireNonNull(JavaManager.JavaVersion.find(version.java_version)).constructInstallation().getJavaExecutable().getAbsolutePath());
+        profile.setExecutable(Objects.requireNonNull(JavaManager.JavaVersion.find(String.valueOf(version.java_version))).constructInstallation().getJavaExecutable().getAbsolutePath());
         profile.setArguments("-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M");
         profile.setMods(new ArrayList<>());
         return profile;

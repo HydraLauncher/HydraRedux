@@ -8,6 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class HydraController
 {
     @FXML public Pane background;
@@ -21,6 +24,12 @@ public class HydraController
     {
         button.setOnMouseEntered((e) -> scaleTransition(button, toScale));
         button.setOnMouseExited((e) -> scaleTransition(button, 1.0D));
+    }
+
+    protected void setupComponentAnimation(Node node, double toScale)
+    {
+        node.setOnMouseEntered((e) -> scaleTransition(node, toScale));
+        node.setOnMouseExited((e) -> scaleTransition(node, 1.0D));
     }
 
     protected void scaleTransition(Node node, double toScale)

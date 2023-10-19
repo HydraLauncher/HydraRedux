@@ -1,19 +1,32 @@
 package org.gethydra.redux;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.gethydra.redux.backend.CrashReport;
 import org.gethydra.redux.backend.DataStore;
 import org.gethydra.redux.backend.JavaManager;
+import org.gethydra.redux.backend.auth.LastLoginInfo;
 import org.gethydra.redux.backend.auth.MethodManager;
+import org.gethydra.redux.backend.auth.SessionValidateRequest;
 import org.gethydra.redux.backend.download.DownloadManager;
 import org.gethydra.redux.backend.profiles.LauncherProfile;
 import org.gethydra.redux.backend.profiles.ProfileManager;
 import org.gethydra.redux.backend.versions.*;
 import org.gethydra.redux.frontend.controllers.SceneManager;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -22,6 +35,7 @@ public class HydraRedux
     private static final Gson gson = new Gson();
     private static Logger log = Logger.getLogger("HydraRedux");
     private static HydraRedux instance = null;
+    private static final HttpClient client = HttpClientBuilder.create().build();
 
     private SceneManager sceneManager;
     private DataStore dataStore;
@@ -36,7 +50,9 @@ public class HydraRedux
     {
         instance = this;
 
-        this.versionManifest = gson.fromJson(Util.get("https://launchermeta.gethydra.org/version_manifest.json"), VersionManifest.class);
+        String vman_json = Util.get("https://cdn.gethydra.org/version_manifest");
+        //TODO: load built-in backup in case this request fails
+        this.versionManifest = gson.fromJson(vman_json, VersionManifest.class);
 
         this.sceneManager = new SceneManager(primaryStage);
         this.dataStore = new DataStore();
@@ -54,18 +70,30 @@ public class HydraRedux
 
         LauncherProfile selectedProfile = this.profileManager.getProfile(this.profileManager.getProfileManifest().selectedProfile);
         if (selectedProfile == null)
-            this.profileManager.setSelectedProfile((this.profileManager.getProfiles().size() > 0) ? this.profileManager.getProfiles().get(0) : this.profileManager.createNewProfile("Default"));
+            this.profileManager.setSelectedProfile((!this.profileManager.getProfiles().isEmpty()) ? this.profileManager.getProfiles().get(0) : this.profileManager.createNewProfile("Default"));
+
+        String startingScene = "Login";
+        LastLoginInfo lastLogin = hasValidSession();
+        if (lastLogin != null)
+        {
+            DataStore store = HydraRedux.getInstance().getDataStore();
+            store.setString("username", lastLogin.username);
+            store.setString("accessToken", lastLogin.accessToken);
+            startingScene = "Main";
+
+            log.info("Found a valid Hydra session in lastlogin.json");
+        } else log.info("No valid Hydra session found on disk, prompting for login");
 
         sceneManager.getPrimaryStage().initStyle(StageStyle.TRANSPARENT);
         sceneManager.getPrimaryStage().getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/images/favicon.png"))));
         sceneManager.getPrimaryStage().setTitle("Hydra");
         sceneManager.getPrimaryStage().setResizable(false);
-        sceneManager.setScene(sceneManager.getScene("Login"));
+        sceneManager.setScene(sceneManager.getScene(startingScene));
         sceneManager.show();
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->
         {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
 
             CrashReport report = new CrashReport(System.getProperty("os.name"), System.getProperty("java.version"));
             for (StackTraceElement stackTraceElement : e.getStackTrace())
@@ -75,8 +103,37 @@ public class HydraRedux
         });
     }
 
+    public LastLoginInfo hasValidSession()
+    {
+        File lastLoginFile = new File(Util.getHydraDirectory(), "lastlogin.json");
+        if (lastLoginFile.exists())
+        {
+            try (JsonReader reader = new JsonReader(new FileReader(lastLoginFile)))
+            {
+                LastLoginInfo lastLogin = gson.fromJson(reader, LastLoginInfo.class);
+
+                HttpPost post = new HttpPost(new URI("https://gethydra.org/api/v1/validate"));
+                post.setHeader("Content-Type", "application/json");
+                post.setHeader("Authorization", "Bearer " + lastLogin.accessToken);
+                HttpResponse response = client.execute(post);
+
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == 200) return lastLogin;
+                else if (statusCode == 401) log.info("Existing session data could not be reused: API says it's invalid");
+                else log.info("API returned unexpected status code: " + statusCode);
+                return null;
+            } catch (Exception ex) {
+                ex.printStackTrace(System.err);
+                return null;
+            }
+        } else return null;
+    }
+
     public void logout()
     {
+        File lastLoginFile = new File(Util.getHydraDirectory(), "lastlogin.json");
+        if (!lastLoginFile.delete()) lastLoginFile.deleteOnExit();
         profileManager.saveToDisk();
         sceneManager.setScene(sceneManager.getScene("Login"));
     }

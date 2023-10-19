@@ -34,7 +34,7 @@ public class MojangMethod extends AuthenticationMethod
             if (response.getStatusLine().getStatusCode() == 200)
             {
                 YggdrasilAuthenticationResponse authResponse = gson.fromJson(IOUtils.toString(response.getEntity().getContent(), response.getEntity().getContentEncoding().getName()), YggdrasilAuthenticationResponse.class);
-                return new AuthenticatedUser(authResponse.selectedProfile.id, authResponse.accessToken);
+                return new AuthenticatedUser(authResponse.selectedProfile.id, authResponse.accessToken, authResponse.clientToken);
             }
             return null;
         } catch (InterruptedException | ExecutionException | CancellationException | IOException ex) {

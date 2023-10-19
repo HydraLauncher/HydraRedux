@@ -1,26 +1,39 @@
 package org.gethydra.redux.frontend.controllers;
 
-import javafx.animation.ScaleTransition;
-import javafx.event.ActionEvent;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.DataStore;
 import org.gethydra.redux.backend.auth.AuthenticatedUser;
 import org.gethydra.redux.backend.auth.Authenticator;
+import org.gethydra.redux.backend.auth.LastLoginInfo;
+import org.gethydra.redux.backend.auth.SessionValidateRequest;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.net.URI;
+import java.nio.file.Files;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class Login extends HydraController
 {
     private static final Logger log = Logger.getLogger("HydraRedux");
+    private static final Gson gson = new Gson();
 
     @FXML public Button btnLogin, btnCloseWindow, btnCreateAccount;
 
@@ -36,9 +49,12 @@ public class Login extends HydraController
     @FXML
     protected void initialize()
     {
+        File lastLoginFile = new File(Util.getHydraDirectory(), "lastlogin.json");
+
         setupButtonAnimation(btnLogin, 1.05D);
         setupButtonAnimation(btnCloseWindow);
         setupButtonAnimation(btnCreateAccount, 1.06D);
+        setupComponentAnimation(cbRememberMe, 1.05D);
 
         btnLogin.setOnAction(e ->
         {
@@ -46,30 +62,38 @@ public class Login extends HydraController
             {
                 Authenticator auth = new Authenticator(txtUsername.getText(), txtPassword.getText());
                 AuthenticatedUser user = auth.authenticate(HydraRedux.getInstance().getMethodManager().getMethod("Hydra"));
-                if (user != null)
+                if (user != null) setLoggedIn(user.getUsername(), user.getSessionID());
+
+                if (user != null && cbRememberMe.isSelected())
                 {
-                    log.info(String.format("Successfully logged in as: %s, access token: %s, profile: %s", user.getUsername(), System.getenv("HYDRA_DEBUG") != null ? user.getSessionID() : "<REDACTED>", HydraRedux.getInstance().getProfileManager().getSelectedProfile().getName()));
-
-                    DataStore store = HydraRedux.getInstance().getDataStore();
-                    store.setString("username", user.getUsername());
-                    store.setString("accessToken", user.getSessionID());
-
-                    SceneManager sceneManager = HydraRedux.getInstance().getSceneManager();
-                    if (sceneManager.getScene("Main") == null)
-                        log.severe("(Login) scene 'Main' == null");
-                    sceneManager.setScene(sceneManager.getScene("Main"));
+                    LastLoginInfo lastLoginInfo = new LastLoginInfo(Objects.requireNonNull(user).getUsername(), user.getSessionID(), user.getClientToken());
+                    try (JsonWriter writer = new JsonWriter(new FileWriter(lastLoginFile)))
+                    {
+                        gson.toJson(lastLoginInfo, LastLoginInfo.class, writer);
+                    }
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
             }
         });
 
-        btnCreateAccount.setOnAction(e ->
-        {
-            Util.openNetpage("https://beta.oldschoolminecraft.net/register");
-        });
+        btnCreateAccount.setOnAction(e -> Util.openNetpage("https://os-mc.net/register"));
 
         btnCloseWindow.setOnAction(e -> HydraRedux.close());
+    }
+
+    private void setLoggedIn(String username, String accessToken)
+    {
+        log.info(String.format("Successfully logged in as: %s, access token: %s, profile: %s", username, System.getenv("HYDRA_DEBUG") != null ? accessToken : "<REDACTED>", HydraRedux.getInstance().getProfileManager().getSelectedProfile().getName()));
+
+        DataStore store = HydraRedux.getInstance().getDataStore();
+        store.setString("username", username);
+        store.setString("accessToken", accessToken);
+
+        SceneManager sceneManager = HydraRedux.getInstance().getSceneManager();
+        if (sceneManager.getScene("Main") == null)
+            log.severe("(Login) scene 'Main' == null");
+        sceneManager.setScene(sceneManager.getScene("Main"));
     }
 
     @FXML protected void btnCloseHandle()

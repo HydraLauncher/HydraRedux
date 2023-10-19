@@ -64,7 +64,7 @@ public class HydraScene<T>
                 this.scene.getStylesheets().add(css);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 

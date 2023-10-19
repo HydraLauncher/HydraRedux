@@ -10,6 +10,7 @@ import org.gethydra.redux.backend.servers.Server;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.Base64;
 import java.util.Objects;
 
 public class ServerList extends HydraController
@@ -90,7 +91,7 @@ public class ServerList extends HydraController
             {
                 String data = "data:image/png;base64," + server.serverIcon;
                 String base64Image = data.split(",")[1];
-                byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+                byte[] imageBytes = Base64.getDecoder().decode(base64Image);
                 BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
                 entry.getController().icon.setImage(SwingFXUtils.toFXImage(img, null));
             } else {

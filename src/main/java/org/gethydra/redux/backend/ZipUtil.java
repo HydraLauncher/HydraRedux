@@ -1,12 +1,17 @@
 package org.gethydra.redux.backend;
 
+import org.gethydra.redux.Util;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -64,6 +69,7 @@ public class ZipUtil
             {
                 ZipEntry entry = entries.nextElement();
                 File file = new File(new File(dst), entry.getName());
+
                 if (file.exists())
                     file.delete();
                 if (entry.isDirectory())
@@ -78,6 +84,23 @@ public class ZipUtil
                                 fos.write(buffer, 0, readLen);
                         }
                     }
+                }
+
+                if (Util.OS.getOS() == Util.OS.Linux)
+                {
+                    HashSet<PosixFilePermission> perms = new HashSet<>();
+                    perms.add(PosixFilePermission.OWNER_EXECUTE);
+                    perms.add(PosixFilePermission.OWNER_READ);
+                    perms.add(PosixFilePermission.OWNER_WRITE);
+
+                    perms.add(PosixFilePermission.GROUP_EXECUTE);
+                    perms.add(PosixFilePermission.GROUP_READ);
+                    perms.add(PosixFilePermission.GROUP_WRITE);
+
+                    perms.add(PosixFilePermission.OTHERS_EXECUTE);
+                    perms.add(PosixFilePermission.OTHERS_READ);
+                    perms.add(PosixFilePermission.OTHERS_WRITE);
+                    Files.setPosixFilePermissions(file.toPath(), perms);
                 }
             }
 

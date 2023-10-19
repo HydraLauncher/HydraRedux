@@ -99,10 +99,10 @@ public class ProfileEditor extends HydraController
             {
                 pm.updateAndSave(selectedProfile);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
             }
 
-            pm.setSelectedProfile(selectedProfile);
+            //pm.setSelectedProfile(selectedProfile);
             thinkAboutChange();
         });
 
@@ -145,7 +145,7 @@ public class ProfileEditor extends HydraController
             cmbVersion.setItems(FXCollections.observableArrayList(versions));
         } catch (Exception ex) {
             log.severe("Something went wrong while refreshing the versions list in the Profile Editor: " + ex.getMessage());
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
         }
     }
 

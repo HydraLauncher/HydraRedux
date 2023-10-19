@@ -13,6 +13,16 @@
     -fx-border-radius: 32px;
 }
 
+#cmbRememberMe:unchecked {
+    -fx-font-size: 16px;
+    -fx-font-family: 'Comfortaa';
+}
+
+#cmbRememberMe:checked {
+    -fx-font-size: 16px;
+    -fx-font-family: 'Comfortaa';
+}
+
 #btnCloseWindow {
     -fx-background-color: rgba(0, 0, 0, 0);
     -fx-background-image: url("../../images/close.png");
@@ -73,6 +83,7 @@
 }
 
 #linkForgotPassword {
+    -fx-font-size: 12px;
     -fx-font-family: 'Comfortaa';
     -fx-text-fill: rgb(31, 56, 70);
 }

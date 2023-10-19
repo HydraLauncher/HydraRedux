@@ -20,7 +20,7 @@ public class Mods extends HydraController
 {
     private static final Logger log = Logger.getLogger("HydraRedux");
 
-    @FXML public Button btnAddMod, btnRemoveMod, btnMoveUp, btnMoveDown, btnOpenHydra;
+    @FXML public Button btnAddMod, btnOpenHydra;
     @FXML public Label lblNoMods;
     @FXML public VBox modBox;
 
@@ -35,9 +35,6 @@ public class Mods extends HydraController
         });
 
         setupButtonAnimation(btnAddMod);
-        setupButtonAnimation(btnRemoveMod);
-        setupButtonAnimation(btnMoveUp);
-        setupButtonAnimation(btnMoveDown);
         setupButtonAnimation(btnOpenHydra);
 
         btnAddMod.setOnAction((e) ->

@@ -27,9 +27,9 @@ public class Main extends HydraController
 
     @FXML public Pane topBar, bottomBar, bottomBarLogo, currentTab, lastPane;
 
-    @FXML public Button btnPlay, btnEditProfile, btnLogout, btnNewProfile, btnDeleteProfile;
+    @FXML public Button btnPlay, btnEditProfile, btnLogout, btnNewProfile, btnDeleteProfile, btnCloseWindow;
 
-    @FXML public Label lblPlay, lblLogout, lblUsername, lblAccountType, lblVersion;
+    @FXML public Label lblPlay, lblUsername, lblAccountType, lblVersion;
     @FXML public Label tabNews, tabSkins, tabServers, tabMods;
 
     @FXML public ComboBox<LauncherProfile> cmbProfile;
@@ -38,7 +38,7 @@ public class Main extends HydraController
 
     @FXML public void initialize()
     {
-        HydraRedux.getInstance().getProfileManager().getEventBus().subscribe(() -> refreshProfile());
+        //HydraRedux.getInstance().getProfileManager().getEventBus().subscribe(() -> refreshProfile());
 
         refreshProfile();
         cmbProfile.getSelectionModel().select(HydraRedux.getInstance().getProfileManager().getSelectedProfile());
@@ -47,7 +47,8 @@ public class Main extends HydraController
         setupButtonAnimation(btnNewProfile);
         setupButtonAnimation(btnEditProfile);
         setupButtonAnimation(btnDeleteProfile);
-        setupButtonAnimation(btnLogout, 1.05D);
+        setupButtonAnimation(btnLogout, 1.08D);
+        setupButtonAnimation(btnCloseWindow, 1.08D);
 
         btnDeleteProfile.setOnAction((e) ->
         {
@@ -99,7 +100,7 @@ public class Main extends HydraController
         cmbProfile.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
             HydraRedux.getInstance().getProfileManager().setSelectedProfile(newValue);
-            HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").fireSceneShownEvent();
+            //HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").fireSceneShownEvent();
         });
 
         btnPlay.setOnAction(e ->
@@ -130,7 +131,7 @@ public class Main extends HydraController
                             log.warning("Game started");
                             pBar.setVisible(false);
                             setLocked(true);
-                            setTab(HydraRedux.getInstance().getSceneManager().<News>getScene("News").getController().background);
+                            //setTab(HydraRedux.getInstance().getSceneManager().<News>getScene("News").getController().background);
                             break;
                         case GAME_CLOSED:
                             log.warning("Game closed with exit code: " + tracker.getExitCode());
@@ -147,7 +148,12 @@ public class Main extends HydraController
             }
         });
 
-        btnLogout.setOnAction(e -> HydraRedux.getInstance().logout());
+        btnLogout.setOnAction(e ->
+        {
+            if (Util.getConfirmation("Wait!", "Logging out will delete your session. Are you sure you want to continue?"))
+                HydraRedux.getInstance().logout();
+        });
+        btnCloseWindow.setOnAction(e -> HydraRedux.close());
 
         // news tab should be selected by default
         resetTabColors();
@@ -159,13 +165,6 @@ public class Main extends HydraController
             resetTabColors();
             tabNews.getStyleClass().add("selectedTab");
             setTab(HydraRedux.getInstance().getSceneManager().<News>getScene("News").getController().background);
-        });
-
-        tabSkins.setOnMouseClicked((e) ->
-        {
-            //resetTabColors();
-            //tabSkins.getStyleClass().add("selectedTab");
-            Util.alert("Oh noes!", "Not implemented yet.", Alert.AlertType.ERROR);
         });
 
         tabServers.setOnMouseClicked((e) ->

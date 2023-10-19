@@ -51,7 +51,6 @@ public class HydraMethod extends AuthenticationMethod
 
             HttpResponse response = httpclient.execute(httpPost);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
             HttpEntity responseEntity = response.getEntity();
             InputStream is = responseEntity.getContent();
             String contentEncoding = "UTF-8";
@@ -62,8 +61,13 @@ public class HydraMethod extends AuthenticationMethod
                 Util.alert("Oh noes!", res.getString("errorMessage"), Alert.AlertType.ERROR);
                 return null;
             }
+            if (!res.has("selectedProfile"))
+            {
+                Util.alert("Oh noes!", "Invalid username or password", Alert.AlertType.ERROR);
+                return null;
+            }
             YggdrasilAuthenticationResponse authResponse = gson.fromJson(responseContent, YggdrasilAuthenticationResponse.class);
-            return new AuthenticatedUser(authResponse.selectedProfile.name, authResponse.accessToken);
+            return new AuthenticatedUser(authResponse.selectedProfile.name, authResponse.accessToken, authResponse.clientToken);
         } catch (CancellationException | IOException ex) {
             //TODO: display error in a user-friendly way (and allow users to decide whether or not to report the error)
             ex.printStackTrace();

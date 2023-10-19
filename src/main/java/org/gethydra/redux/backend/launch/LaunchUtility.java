@@ -1,5 +1,6 @@
 package org.gethydra.redux.backend.launch;
 
+import jdk.jshell.spi.ExecutionControl;
 import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.MinecraftServerAddress;
 import org.gethydra.redux.Util;
@@ -17,9 +18,7 @@ import org.gethydra.redux.backend.versions.Version;
 import org.gethydra.redux.backend.versions.Library;
 import org.gethydra.redux.frontend.controllers.Main;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -51,13 +50,12 @@ public class LaunchUtility
             File gameDirectory = new File(profile.getGameDirectory());
 
             // ensure java is setup correctly
-            //TODO: when the version manifest is complete, make sure this uses that value instead of a hardcoded string
             JavaManager javaManager = HydraRedux.getInstance().getJavaManager();
             JavaManager.JavaInstallation java = javaManager.getInstallation(version.java_version);
             if (java == null) // java isn't installed, queue a download.
                 downloadManager.queueDownload(javaManager.createDownload(JavaManager.JavaVersion.find(version.java_version)));
 
-            downloadManager.queueDownload(new Download(version.client.url, new File(gameDirectory, version.client.path).getAbsolutePath(), version.client.sha1));
+            downloadManager.queueDownload(new Download(version.client.url, new File(Util.getVersionsDirectory(), version.client.path).getAbsolutePath(), version.client.sha1));
 
             for (Library dep : version.libraries)
             {
@@ -143,31 +141,42 @@ public class LaunchUtility
 
             try
             {
-                File javaFile = new File(java.binPath, "java.exe");
+                String osFileName = Util.OS.getOS() == Util.OS.Windows ? "java.exe" : "java";
+                File javaFile = new File(java.binPath, osFileName);
                 if (!javaFile.exists())
-                    log.severe("java.exe doesn't exist");
+                    log.severe("java executable doesn't exist: " + javaFile.getAbsolutePath());
                 // build the process & start the game
-                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), "-Djava.library.path=" + nativesDir.getAbsolutePath(), "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.main_class, new TokenProcessor(version.arguments).process(), address != null ? address.full() : "");
+                String nativesArg = "-Djava.library.path=" + nativesDir.getAbsolutePath();
+                String backupNativesArg = "-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath();
+                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.main_class, new TokenProcessor(version.arguments).process(), address != null ? address.full() : "");
+                gameDirectory.mkdirs();
                 pb.directory(gameDirectory);
                 pb.inheritIO();
                 pb.redirectErrorStream(true); // hack to get proc.waitFor() to return
                 log.info("Launch command: " + pb.command().toString());
                 HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setVisible(false); // this kind of static access isn't ideal TODO: fix
                 Process proc = pb.start();
+
+                proc.getInputStream().close();
+                proc.getErrorStream().close();
                 log.warning("Spawned game process.");
                 tracker.getEventHandler().fire(HydraEvent.GAME_STARTED);
 
                 // proc.waitFor() won't return if the input stream isn't being read
-                while ((new BufferedReader(new InputStreamReader(proc.getInputStream())).readLine()) != null) {}
+//                while ((new BufferedReader(new InputStreamReader(proc.getInputStream())).readLine()) != null) {}
+//                while ((new BufferedReader(new InputStreamReader(proc.getErrorStream())).readLine()) != null) {}
 
                 // game has stopped. fire event & cleanup.
-                int exitCode = proc.waitFor();
-                tracker.setExitCode(exitCode);
+                while (proc.isAlive()) {}
+                System.out.println("Game closed: " + proc.exitValue());
+                tracker.setExitCode(proc.exitValue());
                 tracker.getEventHandler().fire(HydraEvent.GAME_CLOSED);
                 cleanupNatives(version);
                 deleteFile(moddedFile);
                 deleteDirectory(tempDir);
-            } catch (Exception ignored) {}
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             tracker.setExitCode(-1);
@@ -207,7 +216,7 @@ public class LaunchUtility
     {
         StringBuilder sb = new StringBuilder();
         for (Library dep : version.libraries)
-            sb.append(new File(Util.getLibrariesDirectory(), dep.downloads.get("artifact").path)).append(";");
+            if (dep.downloads.size() > 0) sb.append(new File(Util.getLibrariesDirectory(), dep.downloads.get("artifact").path)).append((Util.OS.getOS() == Util.OS.Windows) ? ";" : ":");
         sb.append(client.getAbsolutePath());
         String cp = sb.toString();
         log.info("Classpath: " + cp);

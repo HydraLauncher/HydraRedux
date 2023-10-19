@@ -5,6 +5,7 @@ import org.gethydra.redux.backend.download.Download;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class JavaManager
@@ -25,7 +26,8 @@ public class JavaManager
         for (File dir : Util.getJavaDirectory().listFiles())
         {
             File binDir = new File(dir, "bin");
-            if (dir.isDirectory() && new File(binDir, "java.exe").exists())
+            String osFileName = Util.OS.getOS() == Util.OS.Windows ? "java.exe" : "java";
+            if (dir.isDirectory() && new File(binDir, osFileName).exists())
             {
                 String version = binDir.getPath().split("-")[1];
                 JavaVersion jv = JavaVersion.find(version);
@@ -58,7 +60,7 @@ public class JavaManager
             String jdkFileName = String.format("jdk-%s-%s-%s.%s", version.version, version.platform, version.architecture, version.extension);
             File outputFile = new File(Util.getJavaDirectory(), jdkFileName);
 
-            Download download = new Download(String.format("https://cdn.gethydra.org/cdn/jdk/%s", jdkFileName), outputFile.getAbsolutePath(), "yeet", true);
+            Download download = new Download(String.format("https://cdn.gethydra.org/jdk/%s", jdkFileName), outputFile.getAbsolutePath(), "yeet", true);
             return download;
 
             //installations.add(new JavaInstallation(version.version, new File(outputDir, "bin").getAbsolutePath()));
@@ -84,35 +86,23 @@ public class JavaManager
         public File getJavaExecutable()
         {
             File bin = new File(binPath);
-            return new File(bin, "java.exe");
+            String osFileName = Util.OS.getOS() == Util.OS.Windows ? "java.exe" : "java";
+            return new File(bin, osFileName);
         }
     }
 
     public enum JavaVersion
     {
         JAVA_8_WINDOWS("8", Util.OS.Windows, "x64"),
-        JAVA_9_WINDOWS("9", Util.OS.Windows, "x64"),
-        JAVA_10_WINDOWS("10", Util.OS.Windows, "x64"),
-        JAVA_11_WINDOWS("11", Util.OS.Windows, "x64"),
-        JAVA_12_WINDOWS("12", Util.OS.Windows, "x64"),
-        JAVA_13_WINDOWS("13", Util.OS.Windows, "x64"),
-        JAVA_14_WINDOWS("14", Util.OS.Windows, "x64"),
-        JAVA_15_WINDOWS("15", Util.OS.Windows, "x64"),
-        JAVA_16_WINDOWS("16", Util.OS.Windows, "x64");
+        JAVA_8_LINUX("8", Util.OS.Linux, "x64"),
+        JAVA_8_MAC("8", Util.OS.MacOS, "x64");
 
         JavaVersion(String version, Util.OS platform, String architecture)
         {
             this.version = version;
             this.platform = platform.toString().toLowerCase();
             this.architecture = architecture;
-            switch (platform)
-            {
-                case Windows:
-                    this.extension = "zip";
-                    break;
-                default:
-                    this.extension = "tar.gz";
-            }
+            this.extension = "zip";
         }
 
         public JavaInstallation constructInstallation()
@@ -125,7 +115,7 @@ public class JavaManager
         public static JavaVersion find(String version)
         {
             for (JavaVersion v : values())
-                if (v.version.equalsIgnoreCase(version))
+                if (v.version.equalsIgnoreCase(version) && v.platform.equalsIgnoreCase(Util.OS.getOS().toString()))
                     return v;
             return null;
         }
