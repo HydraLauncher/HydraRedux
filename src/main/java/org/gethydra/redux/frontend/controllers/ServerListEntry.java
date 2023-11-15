@@ -13,6 +13,7 @@ import org.gethydra.redux.backend.download.DownloadTracker;
 import org.gethydra.redux.backend.launch.LaunchUtility;
 import org.gethydra.redux.backend.servers.Server;
 import org.gethydra.redux.backend.versions.Version;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
 
 import java.util.logging.Logger;
 
@@ -70,10 +71,10 @@ public class ServerListEntry extends HydraController
                     }
                 });
                 HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().setLocked(true);
-                Version selectedVersion = HydraRedux.getInstance().getVersionManifest().find(lblServerVersion.getText());
-                new Thread(() -> new LaunchUtility().launch(selectedVersion, tracker, new MinecraftServerAddress(server.serverIP, server.serverPort))).start();
+                BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(lblServerVersion.getText());
+                new Thread(() -> new LaunchUtility().launch(selectedVersion.fetch(), tracker, new MinecraftServerAddress(server.serverIP, server.serverPort))).start();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
                 //TODO: display error
             }
         });

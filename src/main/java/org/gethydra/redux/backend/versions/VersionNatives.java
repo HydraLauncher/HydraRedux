@@ -21,7 +21,7 @@ public class VersionNatives
         {
             case Windows:
                 return windows;
-            case MacOS:
+            case OSX:
                 return mac;
             case Linux:
                 return linux;

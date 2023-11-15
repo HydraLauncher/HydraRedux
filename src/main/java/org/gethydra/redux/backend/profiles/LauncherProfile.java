@@ -47,7 +47,7 @@ public class LauncherProfile
 
     public String getGameDirectory()
     {
-        return new File(Util.getHydraDirectory(), "profiles/" + name + "/").getAbsolutePath();
+        return gameDirectory;
     }
 
     public int getWidth()

@@ -5,10 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.Util;
+import org.gethydra.redux.backend.EventPipe;
 import org.gethydra.redux.backend.JavaManager;
 import org.gethydra.redux.backend.VoidPipe;
 import org.gethydra.redux.backend.versions.Version;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
 import org.gethydra.redux.event.EventBus;
+import org.gethydra.redux.event.Events;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ public class ProfileManager
     private static final Logger log = Logger.getLogger("HydraRedux");
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private final EventBus<VoidPipe> eventBus = new EventBus<>();
+    private final EventBus<EventPipe> eventBus = new EventBus<>();
 
     private ProfileManifest profileManifest;
     private final File fileLauncherProfiles;
@@ -46,7 +49,7 @@ public class ProfileManager
         }
     }
 
-    public EventBus<VoidPipe> getEventBus()
+    public EventBus<EventPipe> getEventBus()
     {
         return eventBus;
     }
@@ -75,21 +78,29 @@ public class ProfileManager
         }
     }
 
-    private void fireEventBus()
+    public void fireEventBus(Events event)
     {
-        for (VoidPipe handler : eventBus.getSubscribers())
-            handler.callback();
+        for (EventPipe handler : eventBus.getSubscribers())
+            handler.flush(event);
     }
 
     public void setSelectedProfile(LauncherProfile profile)
     {
+        setSelectedProfile(profile, true);
+    }
+
+    public void setSelectedProfile(LauncherProfile profile, boolean fireEventBus)
+    {
         if (profile == null)
         {
             log.severe("Failed to set selected profile: profile == null");
+            Thread.dumpStack();
+            System.exit(-1);
             return;
         }
         profileManifest.selectedProfile = profile.getName();
-        fireEventBus();
+        saveToDisk();
+        if (fireEventBus) fireEventBus(Events.PROFILE_SELECTED);
     }
 
     public LauncherProfile getProfile(String name)
@@ -104,14 +115,14 @@ public class ProfileManager
     {
         profileManifest.profiles.add(profile);
         saveToDisk();
-        fireEventBus();
+        fireEventBus(Events.PROFILE_ADDED);
     }
 
     public void removeAndSave(String name) throws IOException
     {
         profileManifest.profiles.removeIf(profile -> profile.getName().equals(name));
         saveToDisk();
-        fireEventBus();
+        fireEventBus(Events.PROFILE_REMOVED);
     }
 
     public void updateAndSave(LauncherProfile profile) throws IOException
@@ -119,7 +130,7 @@ public class ProfileManager
         profileManifest.profiles.removeIf(p -> p.getInternalUUID().equals(profile.getInternalUUID()));
         profileManifest.profiles.add(profile);
         saveToDisk();
-        fireEventBus();
+        fireEventBus(Events.PROFILE_UPDATED);
     }
 
     public void loadFromDisk()
@@ -160,22 +171,19 @@ public class ProfileManager
 
     public LauncherProfile createNewProfile(String name)
     {
-        Version version = HydraRedux.getInstance().getVersionManifest().find(HydraRedux.getInstance().getVersionManifest().latest.release);
-        if (version == null)
-            log.severe("Problem setting up default profile: version == null");
-        assert version != null;
+        BJManifest.BJVersionEntry version = HydraRedux.getInstance().getVersionManifest().find("b1.7.3"); // b1.7.3 is always default
         LauncherProfile profile = new LauncherProfile();
         profile.setInternalUUID(UUID.randomUUID().toString());
         profile.setName(name);
-        profile.setGameDirectory(Objects.requireNonNull(new File(Util.getHydraDirectory(), "profiles/" + name)).getAbsolutePath());
+        profile.setGameDirectory(new File(Util.getHydraDirectory(), "profiles/" + name).getAbsolutePath());
         profile.setWidth(854);
         profile.setHeight(480);
         profile.setAutoCrashReport(true);
         profile.setSnapshotsEnabled(false);
         profile.setBetasEnabled(true);
         profile.setAlphasEnabled(true);
-        profile.setSelectedVersion(HydraRedux.getInstance().getVersionManifest().latest.release);
-        profile.setExecutable(Objects.requireNonNull(JavaManager.JavaVersion.find(String.valueOf(version.java_version))).constructInstallation().getJavaExecutable().getAbsolutePath());
+        profile.setSelectedVersion(version.id);
+        profile.setExecutable(Objects.requireNonNull(JavaManager.JavaVersion.find("8")).constructInstallation().getJavaExecutable().getAbsolutePath());
         profile.setArguments("-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M");
         profile.setMods(new ArrayList<>());
         return profile;

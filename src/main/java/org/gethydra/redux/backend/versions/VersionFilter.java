@@ -1,15 +1,17 @@
 package org.gethydra.redux.backend.versions;
 
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
+
 import java.util.ArrayList;
 
 public class VersionFilter
 {
-    public ArrayList<Version> filter(ArrayList<Version> versions, boolean snapshots, boolean betas, boolean alphas)
+    public ArrayList<BJManifest.BJVersionEntry> filter(ArrayList<BJManifest.BJVersionEntry> versions, boolean snapshots, boolean betas, boolean alphas)
     {
         try
         {
-            ArrayList<Version> filtered = new ArrayList<>();
-            for (Version v : versions)
+            ArrayList<BJManifest.BJVersionEntry> filtered = new ArrayList<>();
+            for (BJManifest.BJVersionEntry v : versions)
             {
                 if (v.type.equalsIgnoreCase("release")) filtered.add(v);
                 else if (v.type.equalsIgnoreCase("old_beta") && betas) filtered.add(v);
@@ -17,7 +19,7 @@ public class VersionFilter
             }
             return filtered;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
             return new ArrayList<>();
         }
     }

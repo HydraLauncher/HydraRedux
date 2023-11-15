@@ -9,6 +9,8 @@ import org.gethydra.redux.backend.LauncherVisibility;
 import org.gethydra.redux.backend.profiles.LauncherProfile;
 import org.gethydra.redux.backend.profiles.ProfileManager;
 import org.gethydra.redux.backend.versions.Version;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
+import org.gethydra.redux.event.Events;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -23,11 +25,27 @@ public class ProfileEditor extends HydraController
     @FXML public TextField txtProfileName, txtGameDirectory, txtExecutable, txtArguments;
     @FXML public Spinner<Integer> sWidth, sHeight;
     @FXML public ComboBox<LauncherVisibility> cmbLauncherVisibility;
-    @FXML public ComboBox<Version> cmbVersion;
+    @FXML public ComboBox<BJManifest.BJVersionEntry> cmbVersion;
     @FXML public Label lblUnsavedChanges;
 
     @FXML protected void initialize()
     {
+        HydraRedux.getInstance().getProfileManager().getEventBus().subscribe((event) ->
+        {
+            if (event == Events.PROFILE_UPDATED)
+            {
+                LauncherProfile profile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
+                txtGameDirectory.setText(profile.getGameDirectory());
+                txtProfileName.setText(profile.getName());
+                txtExecutable.setText(profile.getExecutable());
+                txtArguments.setText(profile.getArguments());
+                sWidth.getValueFactory().setValue(profile.getWidth());
+                sHeight.getValueFactory().setValue(profile.getHeight());
+                cmbLauncherVisibility.getSelectionModel().select(profile.getLauncherVisibility());
+                thinkAboutChange();
+            }
+        });
+
         thinkAboutChange();
 
         cbGameDirectory.setOnAction((e) ->
@@ -102,7 +120,7 @@ public class ProfileEditor extends HydraController
                 ex.printStackTrace(System.err);
             }
 
-            //pm.setSelectedProfile(selectedProfile);
+            pm.setSelectedProfile(selectedProfile);
             thinkAboutChange();
         });
 
@@ -141,7 +159,7 @@ public class ProfileEditor extends HydraController
             if (HydraRedux.getInstance().getVersionManifest() == null) return;
             if (HydraRedux.getInstance().getVersionManifest().versions == null) return;
             cmbVersion.getItems().clear();
-            ArrayList<Version> versions = HydraRedux.getInstance().getVersionManifest().versions;
+            ArrayList<BJManifest.BJVersionEntry> versions = HydraRedux.getInstance().getVersionManifest().versions;
             cmbVersion.setItems(FXCollections.observableArrayList(versions));
         } catch (Exception ex) {
             log.severe("Something went wrong while refreshing the versions list in the Profile Editor: " + ex.getMessage());

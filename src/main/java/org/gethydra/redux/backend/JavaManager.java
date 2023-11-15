@@ -5,7 +5,6 @@ import org.gethydra.redux.backend.download.Download;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public class JavaManager
@@ -95,7 +94,7 @@ public class JavaManager
     {
         JAVA_8_WINDOWS("8", Util.OS.Windows, "x64"),
         JAVA_8_LINUX("8", Util.OS.Linux, "x64"),
-        JAVA_8_MAC("8", Util.OS.MacOS, "x64");
+        JAVA_8_MAC("8", Util.OS.OSX, "x64");
 
         JavaVersion(String version, Util.OS platform, String architecture)
         {

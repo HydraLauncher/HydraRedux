@@ -1,9 +1,7 @@
 package org.gethydra.redux;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +17,6 @@ import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -120,7 +117,7 @@ public class Util
                 return new File(getLinuxHomeDirectory() + "/.hydra");
             case Windows:
                 return new File(System.getProperty("user.home") + "/AppData/Roaming/.hydra");
-            case MacOS:
+            case OSX:
                 return new File("~/Library/Application Support/.hydra");
             case Linux:
                 return new File(getLinuxHomeDirectory() + "/.hydra");
@@ -174,7 +171,7 @@ public class Util
     public enum OS
     {
         Windows,
-        MacOS,
+        OSX,
         Linux,
         Unknown;
 
@@ -182,7 +179,7 @@ public class Util
         {
             String flag = System.getProperty("os.name").toLowerCase();
             if (flag.contains("win")) return OS.Windows;
-            if (flag.contains("osx") || flag.contains("mac")) return OS.MacOS;
+            if (flag.contains("osx") || flag.contains("mac")) return OS.OSX;
             if (flag.contains("nix") || flag.contains("nux")) return OS.Linux;
             return OS.Unknown;
         }

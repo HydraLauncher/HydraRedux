@@ -20,6 +20,7 @@ import org.gethydra.redux.backend.download.DownloadManager;
 import org.gethydra.redux.backend.profiles.LauncherProfile;
 import org.gethydra.redux.backend.profiles.ProfileManager;
 import org.gethydra.redux.backend.versions.*;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
 import org.gethydra.redux.frontend.controllers.SceneManager;
 
 import java.io.File;
@@ -44,15 +45,15 @@ public class HydraRedux
     private DownloadManager downloadManager;
     private ProfileManager profileManager;
     private double xOffset, yOffset;
-    private VersionManifest versionManifest;
+    private BJManifest versionManifest;
 
     protected void init(Stage primaryStage) throws Exception
     {
         instance = this;
 
-        String vman_json = Util.get("https://cdn.gethydra.org/version_manifest");
+        String vman_json = Util.get("https://mcphackers.org/BetterJSONs/version_manifest.json");
         //TODO: load built-in backup in case this request fails
-        this.versionManifest = gson.fromJson(vman_json, VersionManifest.class);
+        this.versionManifest = gson.fromJson(vman_json, BJManifest.class);
 
         this.sceneManager = new SceneManager(primaryStage);
         this.dataStore = new DataStore();
@@ -180,7 +181,7 @@ public class HydraRedux
         return downloadManager;
     }
 
-    public VersionManifest getVersionManifest()
+    public BJManifest getVersionManifest()
     {
         return versionManifest;
     }

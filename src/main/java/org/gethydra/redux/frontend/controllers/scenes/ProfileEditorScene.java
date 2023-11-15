@@ -11,6 +11,7 @@ import org.gethydra.redux.backend.profiles.LauncherProfile;
 import org.gethydra.redux.backend.versions.Version;
 import org.gethydra.redux.backend.versions.VersionFilter;
 import org.gethydra.redux.backend.versions.VersionManifest;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
 import org.gethydra.redux.frontend.controllers.HydraScene;
 import org.gethydra.redux.frontend.controllers.ProfileEditor;
 
@@ -27,49 +28,52 @@ public class ProfileEditorScene extends HydraScene<ProfileEditor>
         super("/assets/fxml/ProfileEditor.fxml");
 
         this.sceneShownEventHandler = () ->
-        {
-            VersionManifest versionManifest = HydraRedux.getInstance().getVersionManifest();
-            LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
-            log.info("Showing profile editor: " + selectedProfile.getName());
-            getController().txtProfileName.setText(selectedProfile.getName());
+                showSelectedProfile(HydraRedux.getInstance().getProfileManager().getSelectedProfile());
 
-            getController().cbGameDirectory.setSelected(!selectedProfile.getGameDirectory().equals(Objects.requireNonNull(Util.getHydraDirectory()).getAbsolutePath()));
-            getController().txtGameDirectory.setText(selectedProfile.getGameDirectory());
-            getController().txtGameDirectory.setDisable(!getController().cbGameDirectory.isSelected());
+        HydraRedux.getInstance().getProfileManager().getEventBus().subscribe((event) -> showSelectedProfile(HydraRedux.getInstance().getProfileManager().getSelectedProfile()));
+    }
 
-            getController().cbResolution.setSelected(selectedProfile.getWidth() != 854 || selectedProfile.getHeight() != 480);
+    private void showSelectedProfile(LauncherProfile profile)
+    {
+        BJManifest versionManifest = HydraRedux.getInstance().getVersionManifest();
+        log.info("Showing profile editor: " + profile.getName());
+        getController().txtProfileName.setText(profile.getName());
 
-            getController().sWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999999));
-            getController().sHeight.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999999));
-            getController().sWidth.getValueFactory().setValue(selectedProfile.getWidth());
-            getController().sHeight.getValueFactory().setValue(selectedProfile.getHeight());
-            getController().sWidth.setDisable(!getController().cbResolution.isSelected());
+        getController().cbGameDirectory.setSelected(!profile.getGameDirectory().equals(Objects.requireNonNull(Util.getHydraDirectory()).getAbsolutePath()));
+        getController().txtGameDirectory.setText(profile.getGameDirectory());
+        getController().txtGameDirectory.setDisable(!getController().cbGameDirectory.isSelected());
 
-            getController().cbCrashReports.setSelected(selectedProfile.getAutoCrashReport());
+        getController().cbResolution.setSelected(profile.getWidth() != 854 || profile.getHeight() != 480);
 
-            getController().cbLauncherVisibility.setSelected(selectedProfile.getLauncherVisibility() != LauncherVisibility.CLOSE);
-            getController().cmbLauncherVisibility.getSelectionModel().select(selectedProfile.getLauncherVisibility());
-            getController().cmbLauncherVisibility.setDisable(!getController().cbLauncherVisibility.isSelected());
+        getController().sWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999999));
+        getController().sHeight.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999999));
+        getController().sWidth.getValueFactory().setValue(profile.getWidth());
+        getController().sHeight.getValueFactory().setValue(profile.getHeight());
+        getController().sWidth.setDisable(!getController().cbResolution.isSelected());
 
-            getController().cbSnapshots.setSelected(selectedProfile.areSnapshotsEnabled());
-            getController().cbBetas.setSelected(selectedProfile.areBetasEnabled());
-            getController().cbAlphas.setSelected(selectedProfile.areAlphasEnabled());
+        getController().cbCrashReports.setSelected(profile.getAutoCrashReport());
 
-            ArrayList<Version> filteredVersions = new VersionFilter().filter(versionManifest.versions, selectedProfile.areSnapshotsEnabled(), selectedProfile.areBetasEnabled(), selectedProfile.areAlphasEnabled());
-            getController().cmbVersion.setItems(FXCollections.observableArrayList(filteredVersions));
-            getController().cmbVersion.getSelectionModel().select(versionManifest.find(selectedProfile.getSelectedVersion()));
+        getController().cbLauncherVisibility.setSelected(profile.getLauncherVisibility() != LauncherVisibility.CLOSE);
+        getController().cmbLauncherVisibility.getSelectionModel().select(profile.getLauncherVisibility());
+        getController().cmbLauncherVisibility.setDisable(!getController().cbLauncherVisibility.isSelected());
 
-            Version selectedVersion = HydraRedux.getInstance().getVersionManifest().find(selectedProfile.getSelectedVersion());
-            assert selectedVersion != null;
-            JavaManager.JavaInstallation java = Objects.requireNonNull(JavaManager.JavaVersion.find(selectedVersion.java_version)).constructInstallation();
+        getController().cbSnapshots.setSelected(profile.areSnapshotsEnabled());
+        getController().cbBetas.setSelected(profile.areBetasEnabled());
+        getController().cbAlphas.setSelected(profile.areAlphasEnabled());
 
-            getController().cbExecutable.setSelected(!selectedProfile.getExecutable().equals(java.getJavaExecutable().getAbsolutePath()));
-            getController().txtExecutable.setText(selectedProfile.getExecutable());
-            getController().txtExecutable.setDisable(!getController().cbExecutable.isSelected());
+        ArrayList<BJManifest.BJVersionEntry> filteredVersions = new VersionFilter().filter(versionManifest.versions, profile.areSnapshotsEnabled(), profile.areBetasEnabled(), profile.areAlphasEnabled());
+        getController().cmbVersion.setItems(FXCollections.observableArrayList(filteredVersions));
+        getController().cmbVersion.getSelectionModel().select(versionManifest.find(profile.getSelectedVersion()));
 
-            getController().cbArguments.setSelected(!selectedProfile.getArguments().equals("-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M"));
-            getController().txtArguments.setText(selectedProfile.getArguments());
-            getController().txtArguments.setDisable(!getController().cbArguments.isSelected());
-        };
+        BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(profile.getSelectedVersion());
+        JavaManager.JavaInstallation java = Objects.requireNonNull(JavaManager.JavaVersion.find(String.valueOf(selectedVersion.fetch().javaVersion.majorVersion))).constructInstallation();
+
+        getController().cbExecutable.setSelected(!profile.getExecutable().equals(java.getJavaExecutable().getAbsolutePath()));
+        getController().txtExecutable.setText(profile.getExecutable());
+        getController().txtExecutable.setDisable(!getController().cbExecutable.isSelected());
+
+        getController().cbArguments.setSelected(!profile.getArguments().equals("-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M"));
+        getController().txtArguments.setText(profile.getArguments());
+        getController().txtArguments.setDisable(!getController().cbArguments.isSelected());
     }
 }

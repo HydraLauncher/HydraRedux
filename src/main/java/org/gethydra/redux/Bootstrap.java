@@ -34,7 +34,7 @@ public class Bootstrap
                 case Windows:
                     javaExecutable = findJavaWindows();
                     break;
-                case MacOS:
+                case OSX:
                 case Linux:
                     javaExecutable = findJavaUnix();
                     break;

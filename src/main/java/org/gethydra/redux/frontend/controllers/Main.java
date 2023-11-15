@@ -15,6 +15,9 @@ import org.gethydra.redux.backend.launch.LaunchUtility;
 import org.gethydra.redux.backend.profiles.LauncherProfile;
 import org.gethydra.redux.backend.profiles.ProfileManager;
 import org.gethydra.redux.backend.versions.Version;
+import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
+import org.gethydra.redux.event.Events;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -38,7 +41,19 @@ public class Main extends HydraController
 
     @FXML public void initialize()
     {
-        //HydraRedux.getInstance().getProfileManager().getEventBus().subscribe(() -> refreshProfile());
+        ProfileManager pm = HydraRedux.getInstance().getProfileManager();
+        pm.getEventBus().subscribe((event) ->
+        {
+            switch (event)
+            {
+                default:
+                    break;
+                case PROFILE_ADDED:
+                case PROFILE_REMOVED:
+                    refreshProfile();
+                    break;
+            }
+        });
 
         refreshProfile();
         cmbProfile.getSelectionModel().select(HydraRedux.getInstance().getProfileManager().getSelectedProfile());
@@ -54,7 +69,6 @@ public class Main extends HydraController
         {
             try
             {
-                ProfileManager pm = HydraRedux.getInstance().getProfileManager();
                 pm.removeAndSave(pm.getSelectedProfile().getName());
                 LauncherProfile profile = pm.getProfiles().get(0);
                 if (profile == null)
@@ -73,7 +87,6 @@ public class Main extends HydraController
         {
             try
             {
-                ProfileManager pm = HydraRedux.getInstance().getProfileManager();
                 LauncherProfile profile = pm.getProfile("New Profile");
                 int num = 1;
                 if (profile != null)
@@ -99,8 +112,8 @@ public class Main extends HydraController
 
         cmbProfile.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
-            HydraRedux.getInstance().getProfileManager().setSelectedProfile(newValue);
-            //HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").fireSceneShownEvent();
+            if (newValue != null) HydraRedux.getInstance().getProfileManager().setSelectedProfile(newValue, false);
+            pm.fireEventBus(Events.PROFILE_SELECTED);
         });
 
         btnPlay.setOnAction(e ->
@@ -130,20 +143,41 @@ public class Main extends HydraController
                         case GAME_STARTED:
                             log.warning("Game started");
                             pBar.setVisible(false);
-                            setLocked(true);
+                            switch (HydraRedux.getInstance().getProfileManager().getSelectedProfile().getLauncherVisibility())
+                            {
+                                default:
+                                case KEEP_OPEN:
+                                    setLocked(true);
+                                    break;
+                                case HIDE_THEN_OPEN:
+                                    HydraRedux.getInstance().getSceneManager().hide();
+                                    break;
+                            }
                             //setTab(HydraRedux.getInstance().getSceneManager().<News>getScene("News").getController().background);
                             break;
                         case GAME_CLOSED:
                             log.warning("Game closed with exit code: " + tracker.getExitCode());
-                            setLocked(false);
                             if (tracker.getExitCode() != 0) Util.alert("Oh noes!", "The game crashed!", Alert.AlertType.ERROR);
+                            switch (HydraRedux.getInstance().getProfileManager().getSelectedProfile().getLauncherVisibility())
+                            {
+                                default:
+                                case KEEP_OPEN:
+                                    break;
+                                case CLOSE:
+                                    System.exit(0);
+                                    break;
+                                case HIDE_THEN_OPEN:
+                                    HydraRedux.getInstance().getSceneManager().show();
+                                    setLocked(false);
+                                    break;
+                            }
                     }
                 });
-                setLocked(true);
-                Version selectedVersion = HydraRedux.getInstance().getVersionManifest().find(HydraRedux.getInstance().getProfileManager().getSelectedProfile().getSelectedVersion());
-                new Thread(() -> new LaunchUtility().launch(selectedVersion, tracker)).start();
+                //setLocked(true);
+                BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(HydraRedux.getInstance().getProfileManager().getSelectedProfile().getSelectedVersion());
+                new Thread(() -> new LaunchUtility().launch(selectedVersion.fetch(), tracker)).start();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
                 //TODO: display error
             }
         });
@@ -194,7 +228,7 @@ public class Main extends HydraController
         ProfileManager pm = HydraRedux.getInstance().getProfileManager();
         LauncherProfile selectedProfile = pm.getSelectedProfile();
         cmbProfile.setItems(FXCollections.observableArrayList(pm.getProfiles()));
-        cmbProfile.autosize();
+        cmbProfile.getSelectionModel().select(selectedProfile);
         lblVersion.setText("Ready to play: " + selectedProfile.getSelectedVersion());
     }
 
