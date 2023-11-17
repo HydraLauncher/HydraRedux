@@ -47,7 +47,7 @@ public class Main extends HydraController
             switch (event)
             {
                 default:
-                    break; // adding a comment so i can try fixing my push mistake :)
+                    break;
                 case PROFILE_ADDED:
                 case PROFILE_REMOVED:
                     refreshProfile();
