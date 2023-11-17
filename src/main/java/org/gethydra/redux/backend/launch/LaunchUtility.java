@@ -88,7 +88,7 @@ public class LaunchUtility
                 //TODO: perform 'extractions' if any (is this even important? idk)
             }
 
-            HydraRedux.getInstance().getDataStore().setString("assetsDirectory", new File(profile.getGameDirectory(), "assets").getAbsolutePath());
+            HydraRedux.getInstance().getDataStore().setString("assetsDirectory", new File(profile.getGameDirectory(), "resources").getAbsolutePath());
             HydraRedux.getInstance().getDataStore().setString("gameDirectory", new File(profile.getGameDirectory()).getAbsolutePath());
 
             // download client
@@ -179,13 +179,14 @@ public class LaunchUtility
                 // build the process & start the game
                 String nativesArg = "-Djava.library.path=" + nativesDir.getAbsolutePath();
                 String backupNativesArg = "-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath();
-                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.mainClass, new TokenProcessor(version.minecraftArguments).process(), address != null ? address.full() : "");
+                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.mainClass, new TokenProcessor(version.minecraftArguments).process());
                 gameDirectory.mkdirs();
                 pb.directory(gameDirectory);
                 pb.inheritIO();
                 pb.redirectErrorStream(true); // hack to get proc.waitFor() to return
-                log.info("Launch command: " + pb.command().toString());
-                HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setVisible(false); // this kind of static access isn't ideal TODO: fix
+                log.info("Raw launch cmd array: " + pb.command());
+                log.info("Executable launch command: " + parseCommand(pb.command().toString()));
+                //HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setVisible(false); // this kind of static access isn't ideal TODO: fix
                 Process proc = pb.start();
 
                 proc.getInputStream().close();
@@ -419,8 +420,29 @@ public class LaunchUtility
     {
         StringBuilder sb = new StringBuilder();
         for (BJMinecraftVersion.Library lib : version.libraries)
-            if (lib.downloads.artifact != null) sb.append(new File(Util.getLibrariesDirectory(), lib.downloads.artifact.path).getAbsolutePath()).append((Util.OS.getOS() == Util.OS.Windows) ? ";" : ":");
-        sb.append(new File(Util.getVersionsDirectory(), version.id + ".jar").getAbsolutePath());
+        {
+            if (lib.downloads.artifact == null) continue;
+            File artifactFile = new File(Util.getLibrariesDirectory(), lib.downloads.artifact.path);
+            if (!artifactFile.exists()) log.severe("Missing classpath artifact: " + artifactFile.getAbsolutePath());
+            sb.append(artifactFile.getAbsolutePath()).append((Util.OS.getOS() == Util.OS.Windows) ? ";" : ":");
+        }
+        sb.append(client.getAbsolutePath());
         return sb.toString();
+    }
+
+    private String parseCommand(String inputString)
+    {
+        // Remove the leading "[" and trailing "]" characters
+        String trimmedString = inputString.substring(1, inputString.length() - 2);
+
+        // Split the string by commas outside of square brackets
+        String[] commandArray = trimmedString.split(",(?![^\\[]*\\])");
+
+        StringBuilder sb = new StringBuilder();
+
+        // Trim whitespace from each element in the array, and append it
+        for (String s : commandArray) sb.append(s.trim()).append(" ");
+
+        return sb.toString().trim();
     }
 }
