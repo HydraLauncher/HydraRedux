@@ -66,6 +66,7 @@ public class ProfileEditorScene extends HydraScene<ProfileEditor>
         getController().cmbVersion.getSelectionModel().select(versionManifest.find(profile.getSelectedVersion()));
 
         BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(profile.getSelectedVersion());
+        if (selectedVersion == null) throw new RuntimeException("selectedVersion == null");
         JavaManager.JavaInstallation java = Objects.requireNonNull(JavaManager.JavaVersion.find(String.valueOf(selectedVersion.fetch().javaVersion.majorVersion))).constructInstallation();
 
         getController().cbExecutable.setSelected(!profile.getExecutable().equals(java.getJavaExecutable().getAbsolutePath()));

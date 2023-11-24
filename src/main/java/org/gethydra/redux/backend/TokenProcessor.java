@@ -18,7 +18,7 @@ public class TokenProcessor
         this.input = input;
     }
 
-    public String process()
+    public String[] process()
     {
         HashMap<String, String> dataMap = new HashMap<>();
         DataStore store = HydraRedux.getInstance().getDataStore();
@@ -35,6 +35,6 @@ public class TokenProcessor
             input = input.replace(key, value);
         }
 
-        return input;
+        return input.trim().split(" ");
     }
 }

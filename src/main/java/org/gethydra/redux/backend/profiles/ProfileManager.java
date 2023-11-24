@@ -7,6 +7,7 @@ import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.EventPipe;
 import org.gethydra.redux.backend.JavaManager;
+import org.gethydra.redux.backend.LauncherVisibility;
 import org.gethydra.redux.backend.VoidPipe;
 import org.gethydra.redux.backend.versions.Version;
 import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
@@ -183,6 +184,7 @@ public class ProfileManager
         profile.setBetasEnabled(true);
         profile.setAlphasEnabled(true);
         profile.setSelectedVersion(version.id);
+        profile.setLauncherVisibility(LauncherVisibility.CLOSE);
         profile.setExecutable(Objects.requireNonNull(JavaManager.JavaVersion.find("8")).constructInstallation().getJavaExecutable().getAbsolutePath());
         profile.setArguments("-Xmx1G -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:-UseAdaptiveSizePolicy -Xmn128M");
         profile.setMods(new ArrayList<>());

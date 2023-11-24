@@ -21,9 +21,7 @@ import org.gethydra.redux.frontend.controllers.Main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class LaunchUtility
@@ -179,7 +177,10 @@ public class LaunchUtility
                 // build the process & start the game
                 String nativesArg = "-Djava.library.path=" + nativesDir.getAbsolutePath();
                 String backupNativesArg = "-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath();
-                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.mainClass, new TokenProcessor(version.minecraftArguments).process());
+                List<Object> pbArgs = new ArrayList<>(List.of(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.mainClass));
+                pbArgs.addAll(Arrays.asList(new TokenProcessor(version.minecraftArguments).process()));
+                String[] stringArray = pbArgs.toArray(new String[0]);
+                ProcessBuilder pb = new ProcessBuilder(stringArray);
                 gameDirectory.mkdirs();
                 pb.directory(gameDirectory);
                 pb.inheritIO();
@@ -337,7 +338,7 @@ public class LaunchUtility
                 // build the process & start the game
                 String nativesArg = "-Djava.library.path=" + nativesDir.getAbsolutePath();
                 String backupNativesArg = "-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath();
-                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.main_class, new TokenProcessor(version.arguments).process(), address != null ? address.full() : "");
+                ProcessBuilder pb = new ProcessBuilder(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.main_class, "", address != null ? address.full() : "");
                 gameDirectory.mkdirs();
                 pb.directory(gameDirectory);
                 pb.inheritIO();

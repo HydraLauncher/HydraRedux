@@ -51,7 +51,8 @@ public class HydraRedux
     {
         instance = this;
 
-        String vman_json = Util.get("https://mcphackers.org/BetterJSONs/version_manifest.json");
+        String vman_json = Util.get("https://launchermeta.gethydra.org/version_manifest.json");
+        if (System.getenv().containsKey("HYDRA_DEBUG")) System.out.println(vman_json);
         //TODO: load built-in backup in case this request fails
         this.versionManifest = gson.fromJson(vman_json, BJManifest.class);
 

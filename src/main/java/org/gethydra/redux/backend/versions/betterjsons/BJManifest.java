@@ -17,6 +17,7 @@ public class BJManifest
         for (BJVersionEntry v : versions)
             if (v.id.equals(id))
                 return v;
+        if (System.getenv().containsKey("HYDRA_DEBUG")) Thread.dumpStack();
         return null;
     }
 
@@ -30,7 +31,9 @@ public class BJManifest
 
         public BJMinecraftVersion fetch()
         {
-            return gson.fromJson(Util.get(url), BJMinecraftVersion.class);
+            String version_data_raw = Util.get(url);
+            if (System.getenv().containsKey("HYDRA_DEBUG")) System.out.println(version_data_raw);
+            return gson.fromJson(version_data_raw, BJMinecraftVersion.class);
         }
 
         @Override

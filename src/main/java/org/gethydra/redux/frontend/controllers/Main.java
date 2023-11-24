@@ -69,6 +69,11 @@ public class Main extends HydraController
         {
             try
             {
+                if (pm.getProfiles().size() == 1)
+                {
+                    Util.alert("Oh noes!", "You can't delete your only profile!", Alert.AlertType.ERROR);
+                    return;
+                }
                 pm.removeAndSave(pm.getSelectedProfile().getName());
                 LauncherProfile profile = pm.getProfiles().get(0);
                 if (profile == null)
@@ -124,6 +129,7 @@ public class Main extends HydraController
 
                 tracker.setStatusHandler((status) ->
                 {
+                    LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
                     switch (status)
                     {
                         case DOWNLOAD_STARTED:
@@ -143,9 +149,13 @@ public class Main extends HydraController
                         case GAME_STARTED:
                             log.warning("Game started");
                             pBar.setVisible(false);
-                            switch (HydraRedux.getInstance().getProfileManager().getSelectedProfile().getLauncherVisibility())
+                            switch (selectedProfile.getLauncherVisibility())
                             {
                                 default:
+                                    break;
+                                case CLOSE:
+                                    System.exit(0);
+                                    break;
                                 case KEEP_OPEN:
                                     setLocked(true);
                                     break;
@@ -174,7 +184,10 @@ public class Main extends HydraController
                     }
                 });
                 //setLocked(true);
-                BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(HydraRedux.getInstance().getProfileManager().getSelectedProfile().getSelectedVersion());
+                LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
+                String selectedVersionStr = selectedProfile.getSelectedVersion();
+                BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(selectedVersionStr);
+                if (selectedVersion == null) throw new RuntimeException("selectedVersion == null");
                 new Thread(() -> new LaunchUtility().launch(selectedVersion.fetch(), tracker)).start();
             } catch (Exception ex) {
                 ex.printStackTrace(System.err);
