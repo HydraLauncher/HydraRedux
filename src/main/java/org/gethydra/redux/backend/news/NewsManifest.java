@@ -33,27 +33,26 @@ public class NewsManifest
 
     public static NewsManifest fetch()
     {
-        try
+        try (CloseableHttpClient httpClient = HttpClients.createDefault())
         {
-//            String postEndpoint = "https://api.gethydra.org/news/get_news?filter=ALL";
-//            CloseableHttpClient httpclient = HttpClients.createDefault();
-//            HttpGet httpPost = new HttpGet(postEndpoint);
-//
-//            httpPost.setHeader("Accept", "application/json");
-//
-//            HttpResponse response = httpclient.execute(httpPost);
-//            if (response.getStatusLine().getStatusCode() == 200)
-//            {
-//                HttpEntity responseEntity = response.getEntity();
-//                InputStream is = responseEntity.getContent();
-//                String contentEncoding = "UTF-8";
-//                String responseContent = IOUtils.toString(is, contentEncoding);
-//                return gson.fromJson(responseContent, NewsManifest.class);
-//            }
+            String postEndpoint = "https://gethydra.org/cdn/news_static.json";
+            HttpGet httpPost = new HttpGet(postEndpoint);
+            httpPost.setHeader("Accept", "application/json");
+
+            HttpResponse response = httpClient.execute(httpPost);
+            if (response.getStatusLine().getStatusCode() == 200)
+            {
+                HttpEntity responseEntity = response.getEntity();
+                InputStream is = responseEntity.getContent();
+                String contentEncoding = "UTF-8";
+                String responseContent = IOUtils.toString(is, contentEncoding);
+                if (System.getenv().containsKey("HYDRA_DEBUG")) System.out.println("Received news, raw: " + responseContent);
+                return gson.fromJson(responseContent, NewsManifest.class);
+            }
             return new NewsManifest(true);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+            ex.printStackTrace(System.err);
+            return new NewsManifest(true);
         }
     }
 }

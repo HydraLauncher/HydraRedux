@@ -2,16 +2,21 @@ package org.gethydra.redux.frontend.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FilenameUtils;
 import org.gethydra.redux.HydraRedux;
+import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.mods.Mod;
 import org.gethydra.redux.backend.mods.ModManager;
+import org.gethydra.redux.backend.profiles.LauncherProfile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,7 +31,7 @@ public class Mods extends HydraController
 
     @FXML protected void initialize()
     {
-        HydraRedux.getInstance().getProfileManager().getSelectedProfile().getModManager().getEventBus().subscribe(() ->
+        HydraRedux.getInstance().getProfileManager().getEventBus().subscribe((event) ->
         {
             log.warning("ModManager event bus fired");
 
@@ -39,16 +44,28 @@ public class Mods extends HydraController
 
         btnAddMod.setOnAction((e) ->
         {
-            ModManager modManager = HydraRedux.getInstance().getProfileManager().getSelectedProfile().getModManager();
+            LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
+            ModManager modManager = selectedProfile.getModManager();
+
+            File modsDir = new File(selectedProfile.getGameDirectory(), "mods/");
+            modsDir.mkdirs();
 
             FileChooser fc = new FileChooser();
             fc.setTitle("Select mod(s)");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("MOD files", "*.jar", "*.zip"));
             List<File> files = fc.showOpenMultipleDialog(HydraRedux.getInstance().getSceneManager().getPrimaryStage());
-            if (files != null && files.size() > 0)
-                files.forEach(file -> modManager.add(new Mod(file.getName(), file.getAbsolutePath())));
-            refreshModView();
-            modBox.requestFocus();
+            if (files != null && !files.isEmpty())
+                files.forEach(file ->
+                {
+                    try
+                    {
+                        File newModFile = new File(modsDir, file.getName());
+                        Files.copy(Paths.get(file.getAbsolutePath()), Paths.get(newModFile.getAbsolutePath()));
+                        modManager.add(new Mod(file.getName(), newModFile.getAbsolutePath()));
+                    } catch (Exception ex) {
+                        Util.alert("Oh noes!", "Failed to add mod:" + System.lineSeparator() + ex.getMessage(), Alert.AlertType.ERROR);
+                    }
+                });
             refreshModView();
         });
 
