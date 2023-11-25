@@ -68,7 +68,11 @@ public class LaunchUtility
                 // null checks
                 // queue download for artifact, classifiers, natives, etc
                 if (artifact != null)
-                    downloadManager.queueDownload(new Download(artifact.url, new File(Util.getLibrariesDirectory(), artifact.path).getAbsolutePath(), artifact.sha1));
+                {
+                    if (artifact.path.contains("natives-" + Util.OS.getOS().toString().toLowerCase()))
+                        nativesArtifacts.add(artifact);
+                    downloadManager.queueDownload(new Download(artifact.url, new File(Util.getLibrariesDirectory(), artifact.path).getAbsolutePath(), artifact.sha1, true));
+                }
                 if (classifiers != null)
                 {
                     if (lib.natives != null)
@@ -76,10 +80,10 @@ public class LaunchUtility
                         String classifierKey = "natives-" + Util.OS.getOS().toString().toLowerCase();
                         Artifact natives = classifiers.get(classifierKey);
                         nativesArtifacts.add(natives);
-                        downloadManager.queueDownload(new Download(natives.url, new File(Util.getLibrariesDirectory(), natives.path).getAbsolutePath(), natives.sha1));
+                        downloadManager.queueDownload(new Download(natives.url, new File(Util.getLibrariesDirectory(), natives.path).getAbsolutePath(), natives.sha1, true));
                     } else {
                         for (Artifact classifier : classifiers.values())
-                            if (!classifier.path.contains("sources")) downloadManager.queueDownload(new Download(classifier.url, new File(Util.getLibrariesDirectory(), classifier.path).getAbsolutePath(), classifier.sha1));
+                            if (!classifier.path.contains("sources")) downloadManager.queueDownload(new Download(classifier.url, new File(Util.getLibrariesDirectory(), classifier.path).getAbsolutePath(), classifier.sha1, true));
                     }
                 }
 
@@ -131,8 +135,12 @@ public class LaunchUtility
             File nativesDir = new File(versionDir, "natives-" + (long) (Math.random() * 100000000000000L));
 
             // unpack natives
+            if (nativesArtifacts.isEmpty()) log.warning("No natives were found, launch will be sure to fail!");
             for (Artifact natives : nativesArtifacts)
+            {
+                log.info("Unpacking natives: " + natives.path);
                 ZipUtil.extractAllTo(new File(Util.getLibrariesDirectory(), natives.path).getAbsolutePath(), nativesDir.getAbsolutePath());
+            }
 
             // extract minecraft & apply mods, if any are installed
             File tempDir = new File(versionDir, "tmp");
