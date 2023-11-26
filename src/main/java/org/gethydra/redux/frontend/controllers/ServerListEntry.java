@@ -1,12 +1,14 @@
 package org.gethydra.redux.frontend.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.MinecraftServerAddress;
+import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.DataStore;
 import org.gethydra.redux.backend.auth.AuthenticatedUser;
 import org.gethydra.redux.backend.download.DownloadTracker;
@@ -47,10 +49,10 @@ public class ServerListEntry extends HydraController
                 tracker.setStatusHandler(new FrontendDownloadTracker(tracker));
                 HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().setLocked(true);
                 BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(lblServerVersion.getText());
+                if (selectedVersion == null) throw new RuntimeException("Could not find selected version: " + lblServerVersion.getText());
                 new Thread(() -> new LaunchUtility().launch(selectedVersion.fetch(), tracker, new MinecraftServerAddress(server.serverIP, server.serverPort))).start();
             } catch (Exception ex) {
-                ex.printStackTrace(System.err);
-                //TODO: display error
+                Util.alert("Oh noes!", "Failed to join the server!" + System.lineSeparator() + "The server is likely reporting an incorrect version to the list API." + System.lineSeparator() + "Contact the server administrators to have them fix this.", Alert.AlertType.ERROR);
             }
         });
     }

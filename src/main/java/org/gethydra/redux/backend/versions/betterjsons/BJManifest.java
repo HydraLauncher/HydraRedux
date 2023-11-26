@@ -17,7 +17,7 @@ public class BJManifest
         for (BJVersionEntry v : versions)
             if (v.id.equals(id))
                 return v;
-        if (System.getenv().containsKey("HYDRA_DEBUG")) Thread.dumpStack();
+//        if (System.getenv().containsKey("HYDRA_DEBUG")) Thread.dumpStack();
         return null;
     }
 
