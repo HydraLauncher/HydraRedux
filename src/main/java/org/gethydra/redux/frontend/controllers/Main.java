@@ -17,6 +17,7 @@ import org.gethydra.redux.backend.profiles.ProfileManager;
 import org.gethydra.redux.backend.versions.Version;
 import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
 import org.gethydra.redux.event.Events;
+import org.gethydra.redux.frontend.FrontendDownloadTracker;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -126,63 +127,7 @@ public class Main extends HydraController
             try
             {
                 DownloadTracker tracker = new DownloadTracker();
-
-                tracker.setStatusHandler((status) ->
-                {
-                    LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
-                    switch (status)
-                    {
-                        case DOWNLOAD_STARTED:
-                            pBar.setVisible(true);
-                            break;
-                        case DOWNLOAD_TRACKER_UPDATE:
-                            pBar.progressProperty().set((double)tracker.getDownloadedBytes() / (double)tracker.getTotalBytes());
-                            pBar.getStyleClass().remove(".dl-completed");
-                            pBar.getStyleClass().remove(".dl-failed");
-                            break;
-                        case DOWNLOAD_FAILED:
-                            log.severe("Download failed");
-                            pBar.setProgress(0.0D);
-                            pBar.setVisible(false);
-                            setLocked(false);
-                            break;
-                        case GAME_STARTED:
-                            log.warning("Game started");
-                            pBar.setVisible(false);
-                            switch (selectedProfile.getLauncherVisibility())
-                            {
-                                default:
-                                    break;
-                                case CLOSE:
-                                    System.exit(0);
-                                    break;
-                                case KEEP_OPEN:
-                                    setLocked(true);
-                                    break;
-                                case HIDE_THEN_OPEN:
-                                    HydraRedux.getInstance().getSceneManager().hide();
-                                    break;
-                            }
-                            //setTab(HydraRedux.getInstance().getSceneManager().<News>getScene("News").getController().background);
-                            break;
-                        case GAME_CLOSED:
-                            log.warning("Game closed with exit code: " + tracker.getExitCode());
-                            if (tracker.getExitCode() != 0) Util.alert("Oh noes!", "The game crashed!", Alert.AlertType.ERROR);
-                            switch (HydraRedux.getInstance().getProfileManager().getSelectedProfile().getLauncherVisibility())
-                            {
-                                default:
-                                case KEEP_OPEN:
-                                    break;
-                                case CLOSE:
-                                    System.exit(0);
-                                    break;
-                                case HIDE_THEN_OPEN:
-                                    HydraRedux.getInstance().getSceneManager().show();
-                                    setLocked(false);
-                                    break;
-                            }
-                    }
-                });
+                tracker.setStatusHandler(new FrontendDownloadTracker(tracker));
                 //setLocked(true);
                 LauncherProfile selectedProfile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
                 String selectedVersionStr = selectedProfile.getSelectedVersion();

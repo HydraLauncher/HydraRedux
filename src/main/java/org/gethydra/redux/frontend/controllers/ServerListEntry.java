@@ -14,6 +14,7 @@ import org.gethydra.redux.backend.launch.LaunchUtility;
 import org.gethydra.redux.backend.servers.Server;
 import org.gethydra.redux.backend.versions.Version;
 import org.gethydra.redux.backend.versions.betterjsons.BJManifest;
+import org.gethydra.redux.frontend.FrontendDownloadTracker;
 
 import java.util.logging.Logger;
 
@@ -43,33 +44,7 @@ public class ServerListEntry extends HydraController
                 DataStore store = HydraRedux.getInstance().getDataStore();
                 AuthenticatedUser user = (AuthenticatedUser) store.getObject("user", null);
                 DownloadTracker tracker = new DownloadTracker();
-
-                tracker.setStatusHandler((status) ->
-                {
-                    switch (status)
-                    {
-                        case DOWNLOAD_STARTED:
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setVisible(true);
-                            break;
-                        case DOWNLOAD_TRACKER_UPDATE:
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.progressProperty().set((double)tracker.getDownloadedBytes() / (double)tracker.getTotalBytes());
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.getStyleClass().remove(".dl-completed");
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.getStyleClass().remove(".dl-failed");
-                            break;
-                        case DOWNLOAD_COMPLETED:
-                            break;
-                        case DOWNLOAD_FAILED:
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setProgress(0.0D);
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().setLocked(false);
-                            break;
-                        case GAME_STARTED:
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().pBar.setVisible(false);
-                            break;
-                        case GAME_CLOSED:
-                            HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().setLocked(false);
-                            break;
-                    }
-                });
+                tracker.setStatusHandler(new FrontendDownloadTracker(tracker));
                 HydraRedux.getInstance().getSceneManager().<Main>getScene("Main").getController().setLocked(true);
                 BJManifest.BJVersionEntry selectedVersion = HydraRedux.getInstance().getVersionManifest().find(lblServerVersion.getText());
                 new Thread(() -> new LaunchUtility().launch(selectedVersion.fetch(), tracker, new MinecraftServerAddress(server.serverIP, server.serverPort))).start();

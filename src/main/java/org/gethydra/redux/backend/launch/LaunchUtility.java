@@ -187,6 +187,13 @@ public class LaunchUtility
                 String backupNativesArg = "-Dorg.lwjgl.librarypath=" + nativesDir.getAbsolutePath();
                 List<Object> pbArgs = new ArrayList<>(List.of(javaFile.getAbsolutePath(), nativesArg, backupNativesArg, "-classpath", buildClasspath(version, modded ? moddedFile : clientFile), version.mainClass));
                 pbArgs.addAll(Arrays.asList(new TokenProcessor(version.minecraftArguments).process()));
+                if (address != null)
+                {
+                    pbArgs.add("--server");
+                    pbArgs.add(address.hostname);
+                    pbArgs.add("--port");
+                    pbArgs.add(Integer.toString(address.port));
+                }
                 String[] stringArray = pbArgs.toArray(new String[0]);
                 ProcessBuilder pb = new ProcessBuilder(stringArray);
                 gameDirectory.mkdirs();

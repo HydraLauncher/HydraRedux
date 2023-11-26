@@ -12,7 +12,7 @@ repositories {
 }
 
 shadowJar {
-    exclude("fx-runtime-windows.zip")
+    exclude("fx-runtime-linux.zip")
 }
 
 dependencies {
