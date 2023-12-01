@@ -41,8 +41,11 @@ public class ProfileManager
     {
         try
         {
-            if (fileLauncherProfiles.createNewFile())
+            if (!fileLauncherProfiles.exists() && fileLauncherProfiles.createNewFile())
+            {
                 log.warning("Launcher profiles missing. A new file has been generated.");
+                profileManifest = new ProfileManifest(createNewProfile("Default"));
+            }
             else
                 log.info("Launcher profiles file exists. No action taken.");
         } catch (Exception ex) {

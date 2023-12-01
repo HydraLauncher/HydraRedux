@@ -165,7 +165,7 @@ public class LaunchUtility
                 // the META-INF step is very important (i think)
                 File META_INF = new File(tempDir, "META-INF");
                 // delete sub files/directories so we'll be able to delete the parent (META-INF)
-                for (File file : Objects.requireNonNull(META_INF.listFiles())) file.delete();
+                if (META_INF.exists()) for (File file : Objects.requireNonNull(META_INF.listFiles())) file.delete();
                 // delete META-INF
                 META_INF.delete();
                 // zip the tempDir up into {version}-modded.jar. this will be used instead of the normal {version}.jar
