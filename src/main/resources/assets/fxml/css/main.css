@@ -48,14 +48,14 @@
 }
 
 #bottomBarLogo {
-    -fx-background-image: url("../../images/hydra.png");
+    -fx-background-image: url("/assets/images/hydra.png");
     -fx-background-repeat: stretch;
     -fx-background-position: center center;
     -fx-background-size: 256 69;
 }
 
 #btnLogout {
-    -fx-background-image: url("../../images/logout.png");
+    -fx-background-image: url("/assets/images/logout.png");
     -fx-background-repeat: stretch;
     -fx-background-position: center center;
     -fx-background-size: 32 32;

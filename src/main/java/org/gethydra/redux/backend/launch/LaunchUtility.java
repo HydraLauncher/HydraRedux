@@ -48,7 +48,7 @@ public class LaunchUtility
 
             LauncherProfile profile = HydraRedux.getInstance().getProfileManager().getSelectedProfile();
             DownloadManager downloadManager = HydraRedux.getInstance().getDownloadManager();
-            File gameDirectory = new File(profile.getGameDirectory());
+            File gameDirectory = new File(profile.getGameDirectory().replace(" ", "_"));
             File versionDir = new File(Util.getVersionsDirectory(), version.id);
             if (!versionDir.exists()) versionDir.mkdirs();
 
@@ -65,25 +65,17 @@ public class LaunchUtility
                 Artifact artifact = lib.downloads.artifact;
                 Map<String, Artifact> classifiers = lib.downloads.classifiers;
 
-                // null checks
-                // queue download for artifact, classifiers, natives, etc
                 if (artifact != null)
-                {
-                    if (artifact.path.contains("natives-" + Util.OS.getOS().toString().toLowerCase()))
-                        nativesArtifacts.add(artifact);
                     downloadManager.queueDownload(new Download(artifact.url, new File(Util.getLibrariesDirectory(), artifact.path).getAbsolutePath(), artifact.sha1, true));
-                }
-                if (classifiers != null)
+                if (classifiers != null && !classifiers.isEmpty())
                 {
-                    if (lib.natives != null)
+                    for (Artifact classifier : classifiers.values())
                     {
-                        String classifierKey = "natives-" + Util.OS.getOS().toString().toLowerCase();
-                        Artifact natives = classifiers.get(classifierKey);
-                        nativesArtifacts.add(natives);
-                        downloadManager.queueDownload(new Download(natives.url, new File(Util.getLibrariesDirectory(), natives.path).getAbsolutePath(), natives.sha1, true));
-                    } else {
-                        for (Artifact classifier : classifiers.values())
-                            if (!classifier.path.contains("sources")) downloadManager.queueDownload(new Download(classifier.url, new File(Util.getLibrariesDirectory(), classifier.path).getAbsolutePath(), classifier.sha1, true));
+                        log.warning("Artifact: " + classifier.path);
+                        log.warning("Matches OS natives (" + ("natives-" + Util.OS.getOS().toString().toLowerCase()) + ")? " + (classifier.path.contains("natives-" + Util.OS.getOS().toString().toLowerCase()) ? "Yes" : "No"));
+                        if (classifier.path.contains("natives-" + Util.OS.getOS().toString().toLowerCase()))
+                            nativesArtifacts.add(classifier);
+                        downloadManager.queueDownload(new Download(classifier.url, new File(Util.getLibrariesDirectory(), classifier.path).getAbsolutePath(), classifier.sha1, true));
                     }
                 }
 
@@ -138,6 +130,11 @@ public class LaunchUtility
             if (nativesArtifacts.isEmpty()) log.warning("No natives were found, launch will be sure to fail!");
             for (Artifact natives : nativesArtifacts)
             {
+                if (natives == null)
+                {
+                    log.severe("Null object added to natives unpack list");
+                    continue;
+                }
                 log.info("Unpacking natives: " + natives.path);
                 ZipUtil.extractAllTo(new File(Util.getLibrariesDirectory(), natives.path).getAbsolutePath(), nativesDir.getAbsolutePath());
             }

@@ -32,7 +32,7 @@
 }
 
 #logo {
-    -fx-background-image: url("../../images/hydra.png");
+    -fx-background-image: url("/assets/images/hydra.svg");
     -fx-background-repeat: stretch;
     -fx-background-position: center center;
     -fx-background-size: 398 140;

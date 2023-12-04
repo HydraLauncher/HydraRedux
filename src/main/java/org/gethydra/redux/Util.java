@@ -118,7 +118,7 @@ public class Util
             case Windows:
                 return new File(System.getProperty("user.home") + "/AppData/Roaming/.hydra");
             case OSX:
-                return new File("~/Library/Application Support/.hydra");
+                return new File(System.getProperty("user.home") + "/Library/Application Support/.hydra");
             case Linux:
                 return new File(getLinuxHomeDirectory() + "/.hydra");
         }

@@ -1,5 +1,6 @@
 package org.gethydra.redux.backend.versions.betterjsons;
 
+import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.versions.Artifact;
 
 import java.util.List;
@@ -64,5 +65,15 @@ public class BJMinecraftVersion {
         public String osx;
         public String linux;
         public String windows;
+
+        public String getSpecific()
+        {
+            return switch (Util.OS.getOS())
+            {
+                default -> windows;
+                case Linux -> linux;
+                case OSX -> osx;
+            };
+        }
     }
 }

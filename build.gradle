@@ -12,7 +12,7 @@ repositories {
 }
 
 shadowJar {
-    exclude("fx-runtime-linux.zip")
+    exclude("fx-runtime-windows.zip")
 }
 
 dependencies {
@@ -23,6 +23,10 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20231013'
     implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.9'
     implementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.14.9'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-anim', version: '1.17'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-bridge', version: '1.17'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-transcoder', version: '1.17'
+    implementation group: 'org.apache.xmlgraphics', name: 'batik-codec', version: '1.17'
 
     implementation(files("libs/javafx.controls.jar"))
     implementation(files("libs/javafx.fxml.jar"))

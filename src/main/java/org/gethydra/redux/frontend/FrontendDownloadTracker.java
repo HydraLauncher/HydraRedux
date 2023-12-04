@@ -70,8 +70,10 @@ public class FrontendDownloadTracker implements EventHandler
                 {
                     default:
                     case KEEP_OPEN:
+                        ctrl.setLocked(false);
                         break;
                     case CLOSE:
+                        ctrl.setLocked(false);
                         System.exit(0);
                         break;
                     case HIDE_THEN_OPEN:

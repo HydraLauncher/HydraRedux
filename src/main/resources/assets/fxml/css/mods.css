@@ -35,6 +35,22 @@
     -fx-text-fill: #f3f3f4;
 }
 
+.mod-move-up {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../../images/moveup.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center;
+    -fx-background-size: 32 32;
+}
+
+.mod-move-down {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../../images/movedown.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center;
+    -fx-background-size: 32 32;
+}
+
 #background {
     -fx-background-color: #1F2527;
 }

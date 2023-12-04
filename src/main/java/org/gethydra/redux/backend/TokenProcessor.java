@@ -25,7 +25,7 @@ public class TokenProcessor
         ProfileManager pm = HydraRedux.getInstance().getProfileManager();
         dataMap.put("${auth_player_name}", store.getString("username", "Player" + new Random().nextInt(999)));
         dataMap.put("${auth_session}", store.getString("accessToken", "1337"));
-        dataMap.put("${game_directory}", store.getString("gameDirectory", pm.getSelectedProfile().getGameDirectory()));
+        dataMap.put("${game_directory}", new File(pm.getSelectedProfile().getGameDirectory()).getAbsolutePath().replace(" ", "_"));
         dataMap.put("${game_assets}", store.getString("assetsDirectory", new File(pm.getSelectedProfile().getGameDirectory(), "resources").getAbsolutePath()));
         
         String input = this.input;

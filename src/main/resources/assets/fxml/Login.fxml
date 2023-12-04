@@ -7,12 +7,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
 <Pane fx:id="background" prefHeight="654.0" prefWidth="939.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.Login">
    <children>
-      <Pane fx:id="logo" layoutX="271.0" layoutY="23.0" prefHeight="140.0" prefWidth="398.0" />
+      <ImageView fx:id="logo" fitHeight="140.0" fitWidth="398.0" layoutX="281.0" layoutY="17.0" />
       <Pane fx:id="grpLogin" layoutX="281.0" layoutY="190.0" prefHeight="322.0" prefWidth="379.0">
          <children>
             <TextField fx:id="txtUsername" layoutX="42.0" layoutY="113.0" prefHeight="25.0" prefWidth="296.0" styleClass="text">

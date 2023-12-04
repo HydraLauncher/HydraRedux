@@ -179,7 +179,7 @@ public class ProfileManager
         LauncherProfile profile = new LauncherProfile();
         profile.setInternalUUID(UUID.randomUUID().toString());
         profile.setName(name);
-        profile.setGameDirectory(new File(Util.getHydraDirectory(), "profiles/" + name).getAbsolutePath());
+        profile.setGameDirectory(new File(Util.getHydraDirectory(), "profiles/" + name.replace(" ", "_")).getAbsolutePath());
         profile.setWidth(854);
         profile.setHeight(480);
         profile.setAutoCrashReport(true);

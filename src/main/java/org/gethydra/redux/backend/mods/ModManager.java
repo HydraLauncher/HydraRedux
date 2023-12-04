@@ -30,7 +30,41 @@ public class ModManager
     {
         mods.removeIf(mod -> mod.getName().equals(name));
         log.warning("Removed mod: " + name);
-        eventBus.getSubscribers().forEach(pipe -> pipe.callback());
+        eventBus.getSubscribers().forEach(VoidPipe::callback);
+    }
+
+    public void moveUp(String name)
+    {
+        for (int i = 0; i < mods.size(); i++)
+        {
+            if (mods.get(i).getName().equals(name))
+            {
+                if (i - 1 < 0) break;
+
+                Mod selected = mods.get(i);
+                Mod above = mods.get(i - 1);
+                mods.set(i, above);
+                mods.set(i - 1, selected);
+            }
+        }
+        eventBus.getSubscribers().forEach(VoidPipe::callback);
+    }
+
+    public void moveDown(String name)
+    {
+        for (int i = 0; i < mods.size(); i++)
+        {
+            if (mods.get(i).getName().equals(name))
+            {
+                if (i + 1 > mods.size()-1) break;
+
+                Mod selected = mods.get(i);
+                Mod below = mods.get(i + 1);
+                mods.set(i, below);
+                mods.set(i + 1, selected);
+            }
+        }
+        eventBus.getSubscribers().forEach(VoidPipe::callback);
     }
 
     public Mod get(String name)

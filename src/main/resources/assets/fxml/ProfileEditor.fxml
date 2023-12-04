@@ -40,6 +40,6 @@
       <Button fx:id="btnCancel" disable="true" layoutX="13.0" layoutY="398.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="75.0" text="Cancel" />
       <Button fx:id="btnSaveProfile" disable="true" layoutX="844.0" layoutY="398.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="113.0" text="Save Profile" />
       <Button fx:id="btnOpenGameDir" layoutX="709.0" layoutY="398.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="121.0" text="Open .hydra" />
-      <Label fx:id="lblUnsavedChanges" layoutX="547.0" layoutY="407.0" opacity="0.0" text="You have unsaved changes!" textFill="#f3f3f4" />
+      <Label fx:id="lblUnsavedChanges" layoutX="517.0" layoutY="402.0" opacity="0.0" text="You have unsaved changes!" textFill="#f3f3f4" />
    </children>
 </Pane>

@@ -1,32 +1,21 @@
 package org.gethydra.redux.frontend.controllers;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import javafx.scene.image.ImageView;
 import org.gethydra.redux.HydraRedux;
 import org.gethydra.redux.Util;
 import org.gethydra.redux.backend.DataStore;
 import org.gethydra.redux.backend.auth.AuthenticatedUser;
 import org.gethydra.redux.backend.auth.Authenticator;
 import org.gethydra.redux.backend.auth.LastLoginInfo;
-import org.gethydra.redux.backend.auth.SessionValidateRequest;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.net.URI;
-import java.nio.file.Files;
+import java.io.*;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -40,7 +29,7 @@ public class Login extends HydraController
     @FXML public TextField txtUsername;
     @FXML public PasswordField txtPassword;
 
-    @FXML public Pane logo, betaWarning;
+    @FXML public ImageView logo;
 
     @FXML public Label lblSignIn, lblEmail, lblPassword, lblLogin;
 

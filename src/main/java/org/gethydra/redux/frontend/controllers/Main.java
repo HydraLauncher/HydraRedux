@@ -82,7 +82,7 @@ public class Main extends HydraController
                     profile = pm.createNewProfile("Default");
                     pm.addAndSave(profile);
                 }
-                cmbProfile.getSelectionModel().select(profile);
+                refreshProfile();
                 HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").fireSceneShownEvent();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
@@ -108,7 +108,7 @@ public class Main extends HydraController
                 }
 
                 pm.addAndSave(profile);
-                cmbProfile.getSelectionModel().select(profile);
+                refreshProfile();
                 setTab(HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").getController().background);
                 HydraRedux.getInstance().getSceneManager().<ProfileEditor>getScene("ProfileEditor").fireSceneShownEvent();
             } catch (Exception ex) {
@@ -120,6 +120,7 @@ public class Main extends HydraController
         {
             if (newValue != null) HydraRedux.getInstance().getProfileManager().setSelectedProfile(newValue, false);
             pm.fireEventBus(Events.PROFILE_SELECTED);
+            refreshProfile();
         });
 
         btnPlay.setOnAction(e ->

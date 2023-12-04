@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.ModEntry">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.gethydra.redux.frontend.controllers.ModEntry">
    <children>
       <Pane fx:id="icon" prefHeight="64.0" prefWidth="64.0" styleClass="mod-icon" />
       <Label fx:id="lblName" layoutX="65.0" layoutY="17.0" text="Name" textFill="#f3f3f4">
@@ -22,8 +21,10 @@
             <Font name="Comfortaa Regular" size="12.0" />
          </font>
       </Label>
-      <CheckBox fx:id="cbEnabled" layoutX="262.0" layoutY="26.0" mnemonicParsing="false" text="Enabled" textFill="#f3f3f4" />
+      <CheckBox fx:id="cbEnabled" layoutX="208.0" layoutY="25.0" mnemonicParsing="false" text="Enabled" textFill="#f3f3f4" />
       <Button fx:id="btnRemove" layoutX="354.0" layoutY="16.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="mod-remove-button" />
+      <Button fx:id="btnMoveUp" layoutX="290.0" layoutY="16.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="mod-move-up" />
+      <Button fx:id="btnMoveDown" layoutX="322.0" layoutY="16.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="mod-move-down" />
    </children>
    <stylesheets>
       <URL value="@css/window.css" />

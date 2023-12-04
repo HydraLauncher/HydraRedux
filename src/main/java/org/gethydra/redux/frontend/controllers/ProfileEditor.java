@@ -102,7 +102,7 @@ public class ProfileEditor extends HydraController
             LauncherProfile selectedProfile = pm.getSelectedProfile();
 
             selectedProfile.setName(txtProfileName.getText());
-            selectedProfile.setGameDirectory(txtGameDirectory.getText());
+            selectedProfile.setGameDirectory(txtGameDirectory.getText().replace(" ", "_"));
             selectedProfile.setWidth(sWidth.getValue());
             selectedProfile.setHeight(sHeight.getValue());
             selectedProfile.setLauncherVisibility(cmbLauncherVisibility.getValue());

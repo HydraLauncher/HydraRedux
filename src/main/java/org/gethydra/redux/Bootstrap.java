@@ -48,6 +48,7 @@ public class Bootstrap
 
             ProcessBuilder pb = new ProcessBuilder(
                     javaExecutable,
+                    "-Dprism.lcdtext=false",
                     "--module-path",
                     new File(Util.getHydraDirectory(), "fx-runtime/lib/").getAbsolutePath(),
                     "--add-modules",

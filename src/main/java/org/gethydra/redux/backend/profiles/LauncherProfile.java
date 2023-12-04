@@ -125,6 +125,7 @@ public class LauncherProfile
     public void setGameDirectory(String gameDirectory)
     {
         this.gameDirectory = gameDirectory;
+        new File(gameDirectory).mkdirs();
     }
 
     public void setWidth(int width)
